@@ -12,96 +12,106 @@ export class MyPage {
   readonly qrCodeButton: Locator;
   readonly settingsButton: Locator;
 
-  // 메뉴 아이템
-  readonly myPointsMenu: Locator;
-  readonly paymentHistoryMenu: Locator;
+  // 메뉴 아이템 (영문 UI)
+  readonly myPointBalanceMenu: Locator;
+  readonly paymentDetailsMenu: Locator;
   readonly helpCenterMenu: Locator;
-  readonly termsOfServiceMenu: Locator;
+  readonly termsAndConditionsMenu: Locator;
   readonly privacyPolicyMenu: Locator;
-  readonly logoutMenu: Locator;
+  readonly signOutMenu: Locator;
 
   // 하단 네비게이션
   readonly navHome: Locator;
   readonly navLife: Locator;
-  readonly navBenefit: Locator;
+  readonly navBenefits: Locator;
   readonly navMyPage: Locator;
 
   constructor(page: Page) {
     this.page = page;
 
     // 사용자 정보
-    this.userEmail = page.getByText('test21@aaaa.com');
-    this.qrCodeButton = page.locator('[aria-label*="QR"], button:has(svg)').first();
-    this.settingsButton = page.locator('[aria-label*="settings"], [aria-label*="설정"]').first();
+    this.userEmail = page.locator('text=@').first();
+    this.qrCodeButton = page.locator('button:has(svg), [aria-label*="QR"]').first();
+    this.settingsButton = page.locator('button:has(svg[class*="settings"]), [aria-label*="settings"]').first();
 
-    // 메뉴 아이템
-    this.myPointsMenu = page.getByText('내 보유 포인트');
-    this.paymentHistoryMenu = page.getByText('결제 내역');
-    this.helpCenterMenu = page.getByText('헬프 센터');
-    this.termsOfServiceMenu = page.getByText('서비스 이용 약관').first();
-    this.privacyPolicyMenu = page.getByText('개인정보처리방침').first();
-    this.logoutMenu = page.getByText('로그아웃');
+    // 메뉴 아이템 (영문 UI - 한/영 이중 언어 지원)
+    this.myPointBalanceMenu = page.getByText(/My Point Balance|내 보유 포인트/);
+    this.paymentDetailsMenu = page.getByText(/Payment details|결제 내역/);
+    this.helpCenterMenu = page.getByText(/Help Center|헬프 센터/);
+    this.termsAndConditionsMenu = page.getByText(/Terms and Conditions|서비스 이용 약관/).first();
+    this.privacyPolicyMenu = page.getByText(/Privacy Policy|개인정보처리방침/).first();
+    this.signOutMenu = page.getByText(/Sign out|로그아웃/);
 
-    // 하단 네비게이션
-    this.navHome = page.getByText('홈', { exact: true });
-    this.navLife = page.getByText('라이프', { exact: true });
-    this.navBenefit = page.getByText('혜택', { exact: true });
-    this.navMyPage = page.getByText('마이페이지', { exact: true });
+    // 하단 네비게이션 (영문)
+    this.navHome = page.getByText('Home', { exact: true });
+    this.navLife = page.getByText('LIFE', { exact: true });
+    this.navBenefits = page.getByText('Benefits', { exact: true });
+    this.navMyPage = page.getByText('My Page', { exact: true });
   }
 
   async goto() {
     await this.page.goto('/m/my');
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
-  async goToMyPoints() {
-    await this.myPointsMenu.click();
+  // 메뉴 클릭 액션
+  async goToMyPointBalance() {
+    await this.myPointBalanceMenu.click();
   }
 
-  async goToPaymentHistory() {
-    await this.paymentHistoryMenu.click();
+  async goToPaymentDetails() {
+    await this.paymentDetailsMenu.click();
   }
 
   async goToHelpCenter() {
     await this.helpCenterMenu.click();
   }
 
-  async goToTermsOfService() {
-    await this.termsOfServiceMenu.click();
+  async goToTermsAndConditions() {
+    await this.termsAndConditionsMenu.click();
   }
 
   async goToPrivacyPolicy() {
     await this.privacyPolicyMenu.click();
   }
 
-  async logout() {
-    await this.logoutMenu.click();
-    // 로그아웃 후 로그인 페이지로 이동 대기 (쿼리 파라미터 포함)
+  async signOut() {
+    await this.signOutMenu.click();
     await this.page.waitForURL(/\/login/);
   }
 
   // 네비게이션 메서드
   async navigateToHome() {
-    await this.navHome.click({ force: true });
+    await this.navHome.click();
     await this.page.waitForURL('**/home');
   }
 
   async navigateToLife() {
-    await this.navLife.click({ force: true });
+    await this.navLife.click();
     await this.page.waitForURL('**/life');
   }
 
-  async navigateToBenefit() {
-    await this.navBenefit.click({ force: true });
+  async navigateToBenefits() {
+    await this.navBenefits.click();
     await this.page.waitForURL('**/benefit');
   }
 
+  // Assertions
   async expectToBeOnMyPage() {
     await expect(this.page).toHaveURL(/\/m\/my/);
-    await expect(this.logoutMenu).toBeVisible();
+    await expect(this.signOutMenu).toBeVisible();
   }
 
   async expectUserEmailVisible(email: string) {
     await expect(this.page.getByText(email)).toBeVisible();
+  }
+
+  async expectAllMenuItemsVisible() {
+    await expect(this.myPointBalanceMenu).toBeVisible();
+    await expect(this.paymentDetailsMenu).toBeVisible();
+    await expect(this.helpCenterMenu).toBeVisible();
+    await expect(this.termsAndConditionsMenu).toBeVisible();
+    await expect(this.privacyPolicyMenu).toBeVisible();
+    await expect(this.signOutMenu).toBeVisible();
   }
 }
