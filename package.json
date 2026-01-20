@@ -1,0 +1,51 @@
+{
+  "name": "ai-driven-e2e",
+  "version": "1.0.0",
+  "description": "AI-Driven E2E Testing System with Self-Healing and Living Documentation",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:report": "playwright show-report",
+    "agent:pom": "tsx scripts/generate-pom.ts",
+    "agent:heal": "tsx scripts/heal-tests.ts",
+    "agent:docs": "tsx scripts/generate-docs.ts",
+    "agent:analyze": "tsx scripts/analyze-failure.ts",
+    "build": "tsc",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write \"**/*.ts\""
+  },
+  "keywords": [
+    "e2e",
+    "testing",
+    "playwright",
+    "ai",
+    "self-healing",
+    "automation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.0",
+    "@google/generative-ai": "^0.24.1",
+    "@playwright/test": "^1.49.0",
+    "cheerio": "^1.0.0",
+    "diff": "^7.0.0",
+    "glob": "^13.0.0",
+    "handlebars": "^4.7.8",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/diff": "^6.0.0",
+    "@types/node": "^22.10.0",
+    "allure-playwright": "^3.0.0",
+    "dotenv": "^16.4.0",
+    "prettier": "^3.4.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

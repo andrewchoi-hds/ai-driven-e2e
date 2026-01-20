@@ -1,0 +1,199 @@
+{
+  "name": "claude-plugins",
+  "version": "1.2.0",
+  "description": "Claude Code plugins: Session wrap-up + Fresh UI / 세션 마무리 + UI 디자인",
+  "agents": {
+    "doc-updater": {
+      "description": "Analyze documentation update needs for CLAUDE.md and context.md. 세션에서 문서화할 내용을 분석합니다.",
+      "tools": ["Read", "Glob", "Grep"]
+    },
+    "automation-scout": {
+      "description": "Analyze automation patterns. Detect opportunities to automate repetitive tasks. 반복 패턴을 찾아 자동화 기회를 탐지합니다.",
+      "tools": ["Read", "Glob", "Grep"]
+    },
+    "learning-extractor": {
+      "description": "Extract learnings, mistakes, and new discoveries. 배운 것, 실수, 발견을 추출합니다.",
+      "tools": ["Read", "Glob", "Grep"]
+    },
+    "followup-suggester": {
+      "description": "Suggest follow-up tasks and priorities. 다음 할 일과 우선순위를 제안합니다.",
+      "tools": ["Read", "Glob", "Grep"]
+    },
+    "duplicate-checker": {
+      "description": "Validate Phase 1 results for duplicates. Phase 1 결과의 중복을 검증합니다.",
+      "tools": ["Read", "Glob", "Grep"]
+    }
+  },
+  "skills": {
+    "wrap": {
+      "description": "Session wrap-up - analyze session, suggest documentation updates, automation opportunities, and follow-up tasks. 세션 마무리 - 문서 업데이트, 자동화 기회, 다음 할 일을 분석합니다.",
+      "triggers": [
+        "/wrap",
+
+        "== 영어 기본 ==",
+        "wrap up session",
+        "end session",
+        "session wrap",
+
+        "== 영어 변형 ==",
+        "wrap it up",
+        "let's wrap",
+        "lets wrap",
+        "wrapping up",
+        "finish session",
+        "close session",
+        "done for today",
+        "call it a day",
+        "wrap up",
+        "wrapup",
+
+        "== 한국어 기본 ==",
+        "세션 정리",
+        "세션 마무리",
+        "세션 끝",
+        "세션 종료",
+
+        "== 띄어쓰기 변형 ==",
+        "세션정리",
+        "세션마무리",
+        "세션끝",
+        "작업마무리",
+        "작업정리",
+
+        "== 요청형 ==",
+        "마무리해줘",
+        "정리해줘",
+        "마무리해",
+        "정리해",
+        "마무리 해줘",
+        "정리 해줘",
+
+        "== 존댓말 ==",
+        "정리해주세요",
+        "마무리해주세요",
+        "정리해 주세요",
+        "마무리해 주세요",
+
+        "== 어미 변형 ==",
+        "정리하자",
+        "정리할까",
+        "마무리하자",
+        "마무리할까",
+        "끝내자",
+        "끝내자고",
+        "마치자",
+        "마치자고",
+
+        "== 질문형 ==",
+        "정리할까요",
+        "마무리할까요",
+        "커밋할거 있어",
+        "뭐 기록해야해",
+        "커밋해야 하나",
+        "뭐 정리해야 해",
+
+        "== 대화형 ==",
+        "이제 정리하자",
+        "오늘은 여기까지",
+        "여기까지 하자",
+        "오늘 끝",
+        "오늘 작업 끝",
+        "정리하고 끝내자",
+        "작업 마무리",
+        "작업 정리",
+
+        "== 시간 표현 ==",
+        "오늘 여기까지",
+        "여기서 끝",
+        "이만 끝",
+        "이만 마무리",
+        "여기까지만",
+
+        "== 축약형 ==",
+        "랩",
+        "랩업",
+        "정리좀",
+        "마무리좀",
+
+        "== 혼합 (한영) ==",
+        "wrap 해줘",
+        "세션 wrap",
+        "wrap 하자",
+        "랩 해줘"
+      ]
+    },
+    "session-wrap": {
+      "description": "Use when user wants to wrap up, end session, document learnings, or prepare commits. 세션 종료, 배운 것 정리, 커밋 준비할 때 사용합니다.",
+      "triggers": [
+        "wrap up session",
+        "end session",
+        "document learnings",
+        "what should I commit",
+        "세션 정리해줘",
+        "오늘 뭐 배웠지",
+        "다음에 뭐 해야해",
+        "CLAUDE.md 업데이트",
+        "뭐 배웠어",
+        "오늘 배운거",
+        "다음에 할 일",
+        "할일 정리",
+        "문서 업데이트해줘",
+        "기록해둘거 있어",
+        "남길거 있어"
+      ]
+    },
+    "ui": {
+      "description": "Fresh UI design - escape generic AI patterns. 뻔한 AI 디자인을 탈피하고 개성있는 UI를 생성합니다.",
+      "triggers": [
+        "/ui",
+        "/fresh",
+        "/ui-design",
+
+        "== 레벨: common ==",
+        "UI 기본으로",
+        "기본 UI",
+        "평범하게 만들어",
+        "무난하게 디자인",
+        "안전하게 UI",
+        "simple UI",
+        "basic design",
+
+        "== 레벨: balance ==",
+        "UI 만들어줘",
+        "UI 만들어",
+        "프론트 만들어줘",
+        "디자인 해줘",
+        "적당히 만들어",
+        "밸런스 있게",
+        "make UI",
+        "create UI",
+        "design this",
+
+        "== 레벨: rare ==",
+        "독특하게 만들어",
+        "독특한 UI",
+        "개성있게 디자인",
+        "개성있는 UI",
+        "남다르게 만들어",
+        "특별하게 디자인",
+        "차별화된 UI",
+        "unique UI",
+        "distinctive design",
+        "different UI",
+
+        "== 레벨: unique ==",
+        "실험적으로 만들어",
+        "실험적인 UI",
+        "과감하게 디자인",
+        "파격적으로",
+        "파격적인 UI",
+        "미친듯이 만들어",
+        "완전 새롭게",
+        "experimental UI",
+        "bold design",
+        "crazy UI",
+        "wild design"
+      ]
+    }
+  }
+}

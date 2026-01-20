@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+reports/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Snapshots (keep structure, ignore content)
+tests/snapshots/**/*.html
+tests/snapshots/**/*.json
+!tests/snapshots/.gitkeep
+
+# Logs
+*.log
+npm-debug.log*
+
+# Coverage
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
