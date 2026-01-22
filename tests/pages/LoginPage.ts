@@ -25,10 +25,10 @@ export class LoginPage {
     this.emailInput = this.page.locator('#email');
     this.passwordInput = this.page.locator('#password');
 
-    // Buttons
-    this.logInButton = this.page.getByRole('button', { name: 'Log in' });
-    this.findPasswordButton = this.page.getByRole('button', { name: 'Find Password' });
-    this.signUpButton = this.page.getByRole('button', { name: 'Sign Up' });
+    // Buttons (영어/한국어 이중 언어 지원)
+    this.logInButton = this.page.getByRole('button', { name: /Log in|로그인/i });
+    this.findPasswordButton = this.page.getByRole('button', { name: /Find Password|비밀번호 찾기/i });
+    this.signUpButton = this.page.getByRole('button', { name: /Sign Up|가입하기/i });
 
     // Footer Links
     this.termsAndConditionsButton = this.page.getByRole('button', { name: 'Terms and Conditions' });
@@ -46,6 +46,15 @@ export class LoginPage {
   async login(email: string, password: string) {
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
+    // 버튼 활성화 대기 (이메일/비밀번호 입력 후 활성화까지 시간 필요)
+    await this.logInButton.waitFor({ state: 'visible' });
+    await this.page.waitForFunction(
+      () => {
+        const btn = document.querySelector('button[type="submit"]');
+        return btn && !btn.hasAttribute('disabled') && btn.getAttribute('aria-disabled') !== 'true';
+      },
+      { timeout: 10000 }
+    );
     await this.logInButton.click();
   }
 

@@ -8,10 +8,13 @@
     "test:ui": "playwright test --ui",
     "test:debug": "playwright test --debug",
     "test:report": "playwright show-report",
+    "posttest": "npm run docs:sync",
     "agent:pom": "tsx scripts/generate-pom.ts",
     "agent:heal": "tsx scripts/heal-tests.ts",
     "agent:docs": "tsx scripts/generate-docs.ts",
     "agent:analyze": "tsx scripts/analyze-failure.ts",
+    "docs:sync": "tsx scripts/sync-docs.ts",
+    "docs:all": "npm run docs:sync && npm run agent:docs",
     "build": "tsc",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"**/*.ts\""

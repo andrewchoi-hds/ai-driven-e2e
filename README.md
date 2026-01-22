@@ -118,12 +118,25 @@ ai_driven_e2e/
 │   ├── dom-parser.ts      # DOM 분석
 │   └── snapshot-manager.ts # 스냅샷 관리
 ├── tests/                 # E2E 테스트
-│   ├── specs/             # 테스트 스펙
+│   ├── specs/             # 테스트 스펙 (17개 파일)
+│   │   ├── auth/          # 로그인/회원가입
+│   │   ├── passport/      # 여권 등록
+│   │   ├── school/        # 학교 선택
+│   │   ├── plan/          # USIM/eSIM 요금제
+│   │   ├── airport/       # 공항 서비스
+│   │   ├── home/          # 홈 페이지
+│   │   ├── mypage/        # 마이페이지
+│   │   └── ...            # 기타 모듈
 │   ├── pages/             # Page Objects
-│   └── fixtures/          # 테스트 데이터
+│   └── fixtures/          # 테스트 데이터/계정 관리
+│       ├── test-users.ts          # 정적 테스트 계정
+│       ├── test-account-manager.ts # 동적 계정 생성
+│       └── files/                  # 테스트 파일 (여권 이미지 등)
 ├── scripts/               # CLI 스크립트
 ├── config/                # 설정 파일
 └── reports/               # 생성된 리포트
+    ├── test-accounts.md   # 생성된 테스트 계정 목록
+    └── *.png              # 테스트 스크린샷
 ```
 
 ## 설정

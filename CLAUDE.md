@@ -44,6 +44,36 @@ import { testUsers } from '../fixtures/test-users';
 await loginPage.login(testUsers.newUser.email, testUsers.newUser.password);
 ```
 
+### 동적 테스트 계정 관리
+
+**위치**: `tests/fixtures/test-account-manager.ts`
+
+일회성 플로우(여권 등록, 요금제 가입 등)를 위한 동적 계정 생성 및 관리:
+
+```typescript
+import {
+  createNewTestAccount,
+  loginWithAccount,
+  updateAccountState,
+} from '../fixtures/test-account-manager';
+
+// 새 계정 생성 (자동 번호 부여)
+const account = await createNewTestAccount(page, '여권 등록 테스트');
+// → test_ai_17@aaa.com 생성
+
+// 계정으로 로그인
+await loginWithAccount(page, account.email, account.password);
+
+// 상태 업데이트 (문서 추적용)
+updateAccountState(account.email, 'passport_registered');
+```
+
+**생성된 계정 추적**: `reports/test-accounts.md`
+**카운터 파일**: `reports/account-counter.json`
+
+**현재 계정 현황** (2026-01-20):
+- test_ai_1 ~ test_ai_16: 여권/요금제/학교 선택 테스트용
+
 ---
 
 ## Page Object Models (POM)
@@ -103,12 +133,39 @@ this.confirmationButton = page.getByRole('button', { name: /Confirmation|확인/
 
 ```
 tests/specs/
-├── auth/           # 인증 플로우 (login, signup)
-├── home/           # 홈 페이지 (상태별 테스트 포함)
-├── mypage/         # 마이페이지
-├── navigation/     # 하단 네비게이션
-└── [feature]/      # 기능별 테스트
+├── auth            # 인증 플로우 (로그인/회원가입) - 3개 파일, 23개 테스트
+├── mypage          # 마이페이지 - 2개 파일, 23개 테스트
+├── plan            # 요금제 선택 (USIM/eSIM) - 3개 파일, 23개 테스트
+├── arc             # arc - 1개 파일, 16개 테스트
+├── school          # 학교 선택 및 정보 등록 - 1개 파일, 16개 테스트
+├── home            # 홈 페이지 (상태별 UI) - 2개 파일, 8개 테스트
+├── airport         # 공항 서비스 - 1개 파일, 7개 테스트
+├── life            # Life 콘텐츠 - 1개 파일, 5개 테스트
+├── navigation      # 하단 네비게이션 - 1개 파일, 5개 테스트
+├── passport        # 여권 등록 플로우 - 1개 파일, 5개 테스트
+├── benefit         # Benefit 페이지 - 1개 파일, 4개 테스트
+├── discovery       # 앱 탐색/디스커버리 - 1개 파일, 3개 테스트
 ```
+
+### 주요 테스트 모듈
+
+| 모듈 | 파일 | 테스트 수 | 설명 |
+|------|------|----------|------|
+| auth | signup.spec.ts, logout.spec.ts, login.spec.ts | 23개 | 인증 플로우 (로그인/회원가입) |
+| mypage | mypage.spec.ts, mypage-detail.spec.ts | 23개 | 마이페이지 |
+| plan | usim-plan.spec.ts, plan-complete-flow.spec.ts, esim-plan.spec.ts | 23개 | 요금제 선택 (USIM/eSIM) |
+| arc | arc-connection-flow.spec.ts | 16개 | arc |
+| school | school-selection.spec.ts | 16개 | 학교 선택 및 정보 등록 |
+| home | home.spec.ts, home-state.spec.ts | 8개 | 홈 페이지 (상태별 UI) |
+| airport | airport.spec.ts | 7개 | 공항 서비스 |
+| life | life.spec.ts | 5개 | Life 콘텐츠 |
+| navigation | navigation.spec.ts | 5개 | 하단 네비게이션 |
+| passport | passport-register.spec.ts | 5개 | 여권 등록 플로우 |
+| benefit | benefit.spec.ts | 4개 | Benefit 페이지 |
+| discovery | app-explorer.spec.ts | 3개 | 앱 탐색/디스커버리 |
+
+> **총계**: 19개 파일, 139개 테스트 (2026-01-22 기준)
+
 
 ### 회원가입 테스트 패턴 (12개 테스트)
 
@@ -136,6 +193,37 @@ test('should show passport registration for new user', async () => {
   await expect(homePage.passportRegistrationCard).toBeVisible();
 });
 ```
+
+### 일회성 플로우 테스트 패턴
+
+계정당 1회만 가능한 플로우(여권 등록, 요금제 가입, 학교 선택)는 `serial` 모드 사용:
+
+```typescript
+test.describe('여권 등록 플로우', () => {
+  test.describe.configure({ mode: 'serial' });
+
+  let testEmail: string;
+
+  test('새 계정 생성', async ({ page }) => {
+    const account = await createNewTestAccount(page, '여권 등록 테스트');
+    testEmail = account.email;
+  });
+
+  test('여권 업로드', async ({ page }) => {
+    await loginWithAccount(page, testEmail, 'qwer1234');
+    // 여권 등록 진행...
+  });
+});
+```
+
+### 주요 URL 패턴
+
+| 기능 | URL |
+|------|-----|
+| 여권 등록 | `/m/home/submit/passport` (2단계) |
+| 학교 선택 | `/m/home/submit/university` |
+| 요금제 선택 | `/m/mobile-plan/usim/{id}` 또는 `/esim/{id}` |
+| 공항 서비스 | `/m/home/airport-service` |
 
 ---
 
@@ -321,5 +409,5 @@ const uniqueEmail = `test-${Date.now()}@aaa.com`;
 
 ---
 
-*마지막 업데이트: 2026-01-19*
-*세션: 회원가입 E2E 테스트 및 한국어 리포팅 구현*
+*마지막 업데이트: 2026-01-22*
+*세션: 일회성 플로우 테스트 (여권, 요금제, 학교 선택, 공항 서비스) 구현*

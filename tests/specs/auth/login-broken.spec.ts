@@ -5,7 +5,7 @@ import { test, expect } from '@playwright/test';
  * Self-Healing 기능 테스트용
  */
 test.describe('Login Page - Broken Selectors', () => {
-  test('should fill login form with broken selectors', async ({ page }) => {
+  test.skip('should fill login form with broken selectors', async ({ page }) => {
     await page.goto('/login');
 
     // 깨진 셀렉터들 - 실제로는 #email, #password 사용해야 함

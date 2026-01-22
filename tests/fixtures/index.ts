@@ -5,3 +5,4 @@
 
 export * from './test-users';
 export * from './expected-elements';
+export * from './test-account-manager';
