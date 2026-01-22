@@ -53,7 +53,7 @@ interface UIChange {
 const PAGES_TO_EXPLORE = [
   { name: 'login', url: '/login', requiresAuth: false },
   { name: 'home', url: '/m/home', requiresAuth: true },
-  { name: 'mypage', url: '/m/my-page', requiresAuth: true },
+  { name: 'mypage', url: '/m/my', requiresAuth: true },
   { name: 'life', url: '/m/life', requiresAuth: true },
   { name: 'benefit', url: '/m/benefit', requiresAuth: true },
 ];
@@ -136,14 +136,22 @@ async function collectElements(page: Page): Promise<UIElement[]> {
 
   // 2. 메뉴 아이템 수집 (div, span 기반 - MyPage, Life 페이지용)
   const menuKeywords = [
-    // 영문 메뉴
-    'My Point', 'Payment', 'Help Center', 'Terms', 'Privacy', 'Sign out', 'Refund',
-    // 한글 메뉴
-    '포인트', '결제', '헬프', '약관', '개인정보', '로그아웃', '환불',
+    // MyPage 영문 메뉴 (전체 텍스트)
+    'My Point Balance', 'Payment details', 'Help Center',
+    'Terms and Conditions', 'Privacy Policy', 'Sign out', 'Refund Policy',
+    // MyPage 한글 메뉴
+    '내 보유 포인트', '결제 내역', '헬프 센터',
+    '서비스 이용 약관', '개인정보처리방침', '로그아웃', '환불 정책',
+    // MyPage 부분 매칭
+    'My Point', 'Payment', 'Help', 'Terms', 'Privacy', 'Refund',
+    '포인트', '결제', '헬프', '약관', '개인정보', '환불',
     // Life 페이지
-    '가이드', '할인', '절약', '여행', '숙박', '영화', '약국',
+    'Guide to Life', 'K-Life', 'Support Event',
+    '한국 생활 가이드', '가이드', '할인', '절약', '여행', '숙박', '영화', '약국',
     // 네비게이션
     'Home', 'LIFE', 'Benefits', 'My Page', '홈', '라이프', '혜택', '마이페이지',
+    // 공통 UI 요소
+    'QR', 'Settings', '설정', 'FAQ',
   ];
 
   for (const keyword of menuKeywords) {

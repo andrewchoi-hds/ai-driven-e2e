@@ -32,7 +32,7 @@ interface ComparisonResult {
 const PAGES_TO_CAPTURE = [
   { name: 'login', url: '/login', requiresAuth: false },
   { name: 'home', url: '/m/home', requiresAuth: true },
-  { name: 'mypage', url: '/m/my-page', requiresAuth: true },
+  { name: 'mypage', url: '/m/my', requiresAuth: true },
   { name: 'life', url: '/m/life', requiresAuth: true },
   { name: 'benefit', url: '/m/benefit', requiresAuth: true },
 ];
