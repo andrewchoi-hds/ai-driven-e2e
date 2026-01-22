@@ -27,9 +27,20 @@ interface UserAccount {
 }
 
 const TEST_ACCOUNTS: UserAccount[] = [
-  { email: 'aiqa1@aaa.com', password: 'qwer1234', state: 'registered', description: '여권/체류 등록 완료' },
-  { email: 'aiqa2@aaa.com', password: 'qwer1234', state: 'new', description: '신규 사용자' },
-  { email: 'aiqa3@aaa.com', password: 'qwer1234', state: 'new', description: '신규 사용자' },
+  // 신규 사용자 (서류 미제출)
+  { email: 'aiqa2@aaa.com', password: 'qwer1234', state: 'new', description: '신규 사용자 (서류 미제출)' },
+
+  // 여권 등록 완료
+  { email: 'test_ai_11@aaa.com', password: 'qwer1234', state: 'passport_registered', description: '여권 등록 완료' },
+
+  // 체류만료일 등록 (연장 신청 가능)
+  { email: 'test_ai_19@aaa.com', password: 'qwer1234', state: 'stay_expiry', description: '체류만료일 등록됨 (연장 신청용)' },
+
+  // 학교 선택 완료
+  { email: 'test_ai_15@aaa.com', password: 'qwer1234', state: 'school_selected', description: '학교 선택 완료' },
+
+  // 요금제 가입 테스트용
+  { email: 'test_ai_5@aaa.com', password: 'qwer1234', state: 'plan_ready', description: '요금제 가입 테스트용' },
 ];
 
 interface ComparisonResult {
