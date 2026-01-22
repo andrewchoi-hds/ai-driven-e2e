@@ -143,6 +143,7 @@ tests/specs/
 ├── life            # Life 콘텐츠 - 1개 파일, 5개 테스트
 ├── navigation      # 하단 네비게이션 - 1개 파일, 5개 테스트
 ├── passport        # 여권 등록 플로우 - 1개 파일, 5개 테스트
+├── stay-expiry     # stay-expiry - 1개 파일, 5개 테스트
 ├── benefit         # Benefit 페이지 - 1개 파일, 4개 테스트
 ├── discovery       # 앱 탐색/디스커버리 - 1개 파일, 3개 테스트
 ```
@@ -161,10 +162,11 @@ tests/specs/
 | life | life.spec.ts | 5개 | Life 콘텐츠 |
 | navigation | navigation.spec.ts | 5개 | 하단 네비게이션 |
 | passport | passport-register.spec.ts | 5개 | 여권 등록 플로우 |
+| stay-expiry | stay-expiry.spec.ts | 5개 | stay-expiry |
 | benefit | benefit.spec.ts | 4개 | Benefit 페이지 |
 | discovery | app-explorer.spec.ts | 3개 | 앱 탐색/디스커버리 |
 
-> **총계**: 19개 파일, 139개 테스트 (2026-01-22 기준)
+> **총계**: 20개 파일, 144개 테스트 (2026-01-22 기준)
 
 
 ### 회원가입 테스트 패턴 (12개 테스트)
