@@ -133,17 +133,17 @@ this.confirmationButton = page.getByRole('button', { name: /Confirmation|확인/
 
 ```
 tests/specs/
-├── auth            # 인증 플로우 (로그인/회원가입) - 3개 파일, 23개 테스트
+├── auth            # 인증 플로우 (로그인/회원가입) - 5개 파일, 33개 테스트
 ├── mypage          # 마이페이지 - 2개 파일, 23개 테스트
 ├── plan            # 요금제 선택 (USIM/eSIM) - 3개 파일, 23개 테스트
+├── stay-expiry     # stay-expiry - 2개 파일, 18개 테스트
 ├── arc             # arc - 1개 파일, 16개 테스트
 ├── school          # 학교 선택 및 정보 등록 - 1개 파일, 16개 테스트
 ├── home            # 홈 페이지 (상태별 UI) - 2개 파일, 8개 테스트
 ├── airport         # 공항 서비스 - 1개 파일, 7개 테스트
 ├── life            # Life 콘텐츠 - 1개 파일, 5개 테스트
 ├── navigation      # 하단 네비게이션 - 1개 파일, 5개 테스트
-├── passport        # 여권 등록 플로우 - 1개 파일, 5개 테스트
-├── stay-expiry     # stay-expiry - 1개 파일, 5개 테스트
+├── passport        # 여권 등록 플로우 - 2개 파일, 5개 테스트
 ├── benefit         # Benefit 페이지 - 1개 파일, 4개 테스트
 ├── discovery       # 앱 탐색/디스커버리 - 1개 파일, 3개 테스트
 ```
@@ -152,21 +152,21 @@ tests/specs/
 
 | 모듈 | 파일 | 테스트 수 | 설명 |
 |------|------|----------|------|
-| auth | signup.spec.ts, logout.spec.ts, login.spec.ts | 23개 | 인증 플로우 (로그인/회원가입) |
+| auth | signup.spec.ts, signup-negative.spec.ts, logout.spec.ts, login.spec.ts, login-negative.spec.ts | 33개 | 인증 플로우 (로그인/회원가입) |
 | mypage | mypage.spec.ts, mypage-detail.spec.ts | 23개 | 마이페이지 |
 | plan | usim-plan.spec.ts, plan-complete-flow.spec.ts, esim-plan.spec.ts | 23개 | 요금제 선택 (USIM/eSIM) |
+| stay-expiry | stay-expiry.spec.ts, stay-expiry-validation.spec.ts | 18개 | stay-expiry |
 | arc | arc-connection-flow.spec.ts | 16개 | arc |
 | school | school-selection.spec.ts | 16개 | 학교 선택 및 정보 등록 |
 | home | home.spec.ts, home-state.spec.ts | 8개 | 홈 페이지 (상태별 UI) |
 | airport | airport.spec.ts | 7개 | 공항 서비스 |
 | life | life.spec.ts | 5개 | Life 콘텐츠 |
 | navigation | navigation.spec.ts | 5개 | 하단 네비게이션 |
-| passport | passport-register.spec.ts | 5개 | 여권 등록 플로우 |
-| stay-expiry | stay-expiry.spec.ts | 5개 | stay-expiry |
+| passport | passport-upload-validation.spec.ts, passport-register.spec.ts | 5개 | 여권 등록 플로우 |
 | benefit | benefit.spec.ts | 4개 | Benefit 페이지 |
 | discovery | app-explorer.spec.ts | 3개 | 앱 탐색/디스커버리 |
 
-> **총계**: 20개 파일, 144개 테스트 (2026-01-22 기준)
+> **총계**: 24개 파일, 167개 테스트 (2026-01-22 기준)
 
 
 ### 회원가입 테스트 패턴 (12개 테스트)
