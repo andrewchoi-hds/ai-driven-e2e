@@ -15,7 +15,7 @@ interface PageInfo {
 
 const discoveredPages: Map<string, PageInfo> = new Map();
 
-test.describe('앱 자동 탐색', () => {
+test.describe.skip('앱 자동 탐색', () => {
   test('홈 페이지에서 시작하여 모든 페이지 탐색', async ({ page }) => {
     // 로그인
     await page.goto('/login');

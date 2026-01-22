@@ -6,7 +6,7 @@ test.describe('하단 네비게이션', () => {
     // 로그인
     const loginPage = new LoginPage(page);
     await loginPage.goto();
-    await loginPage.login('test21@aaaa.com', 'qwer1234');
+    await loginPage.login('aiqa1@aaa.com', 'qwer1234');
     await page.waitForURL('**/home');
   });
 

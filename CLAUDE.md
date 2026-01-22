@@ -144,8 +144,8 @@ tests/specs/
 ├── resilience      # resilience - 1개 파일, 6개 테스트
 ├── life            # Life 콘텐츠 - 1개 파일, 5개 테스트
 ├── navigation      # 하단 네비게이션 - 1개 파일, 5개 테스트
-├── passport        # 여권 등록 플로우 - 2개 파일, 5개 테스트
 ├── benefit         # Benefit 페이지 - 1개 파일, 4개 테스트
+├── passport        # 여권 등록 플로우 - 2개 파일, 4개 테스트
 ├── discovery       # 앱 탐색/디스커버리 - 1개 파일, 3개 테스트
 ```
 
@@ -164,11 +164,11 @@ tests/specs/
 | resilience | network-errors.spec.ts | 6개 | resilience |
 | life | life.spec.ts | 5개 | Life 콘텐츠 |
 | navigation | navigation.spec.ts | 5개 | 하단 네비게이션 |
-| passport | passport-upload-validation.spec.ts, passport-register.spec.ts | 5개 | 여권 등록 플로우 |
 | benefit | benefit.spec.ts | 4개 | Benefit 페이지 |
+| passport | passport-upload-validation.spec.ts, passport-register.spec.ts | 4개 | 여권 등록 플로우 |
 | discovery | app-explorer.spec.ts | 3개 | 앱 탐색/디스커버리 |
 
-> **총계**: 27개 파일, 185개 테스트 (2026-01-22 기준)
+> **총계**: 27개 파일, 184개 테스트 (2026-01-22 기준)
 
 
 ### 회원가입 테스트 패턴 (12개 테스트)

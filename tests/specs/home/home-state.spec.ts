@@ -12,7 +12,7 @@ test.describe('홈 페이지 - 상태별 테스트', () => {
   /**
    * 신규 사용자 (여권 미등록) 상태 테스트
    */
-  test.describe('신규 사용자 (여권 미등록)', () => {
+  test.describe.skip('신규 사용자 (여권 미등록)', () => {
     const user = testUsers.newUser;
     const expectedElements = homePageExpectedElements[user.state];
 

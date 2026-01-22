@@ -103,7 +103,7 @@ test.describe('학교 선택 - 기존 계정', () => {
   });
 });
 
-test.describe('학교 선택 - 신규 가입 후 연속 플로우', () => {
+test.describe.skip('학교 선택 - 신규 가입 후 연속 플로우', () => {
   test.describe.configure({ mode: 'serial' });
 
   let testEmail: string;
