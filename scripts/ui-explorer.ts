@@ -79,8 +79,17 @@ async function login(page: Page): Promise<boolean> {
 
 async function collectElements(page: Page): Promise<UIElement[]> {
   const elements: UIElement[] = [];
+  const seenSelectors = new Set<string>();
 
-  // 클릭 가능한 요소들 수집
+  // 헬퍼: 요소 추가 (중복 방지)
+  const addElement = (el: UIElement) => {
+    if (el.selector && !seenSelectors.has(el.selector)) {
+      seenSelectors.add(el.selector);
+      elements.push(el);
+    }
+  };
+
+  // 1. 클릭 가능한 기본 요소들 수집
   const clickables = await page.locator('button, a, [role="button"], [onclick], input[type="submit"]').all();
 
   for (const el of clickables) {
@@ -95,7 +104,6 @@ async function collectElements(page: Page): Promise<UIElement[]> {
       const className = await el.getAttribute('class');
       const id = await el.getAttribute('id');
 
-      // 가장 좋은 selector 결정
       let selector = '';
       if (testId) {
         selector = `[data-testid="${testId}"]`;
@@ -110,7 +118,7 @@ async function collectElements(page: Page): Promise<UIElement[]> {
         selector = `.${mainClass}`;
       }
 
-      elements.push({
+      addElement({
         selector,
         text: text.trim().substring(0, 50),
         tag,
@@ -126,7 +134,138 @@ async function collectElements(page: Page): Promise<UIElement[]> {
     }
   }
 
-  // 입력 필드 수집
+  // 2. 메뉴 아이템 수집 (div, span 기반 - MyPage, Life 페이지용)
+  const menuKeywords = [
+    // 영문 메뉴
+    'My Point', 'Payment', 'Help Center', 'Terms', 'Privacy', 'Sign out', 'Refund',
+    // 한글 메뉴
+    '포인트', '결제', '헬프', '약관', '개인정보', '로그아웃', '환불',
+    // Life 페이지
+    '가이드', '할인', '절약', '여행', '숙박', '영화', '약국',
+    // 네비게이션
+    'Home', 'LIFE', 'Benefits', 'My Page', '홈', '라이프', '혜택', '마이페이지',
+  ];
+
+  for (const keyword of menuKeywords) {
+    try {
+      const menuItems = await page.locator(`text=${keyword}`).all();
+      for (const el of menuItems) {
+        const isVisible = await el.isVisible().catch(() => false);
+        if (!isVisible) continue;
+
+        const text = await el.textContent().catch(() => '') || '';
+        const tag = await el.evaluate((e) => e.tagName.toLowerCase());
+        const testId = await el.getAttribute('data-testid');
+        const id = await el.getAttribute('id');
+
+        let selector = '';
+        if (testId) {
+          selector = `[data-testid="${testId}"]`;
+        } else if (id) {
+          selector = `#${id}`;
+        } else {
+          selector = `getByText('${text.trim().substring(0, 30)}')`;
+        }
+
+        addElement({
+          selector,
+          text: text.trim().substring(0, 50),
+          tag,
+          testId: testId || undefined,
+          id: id || undefined,
+          isClickable: true,
+          isVisible: true,
+        });
+      }
+    } catch (e) {
+      // Skip if keyword not found
+    }
+  }
+
+  // 3. 하단 네비게이션 바 수집
+  const navSelectors = [
+    'nav a', 'nav button', '[role="navigation"] a', '[role="navigation"] button',
+    '[class*="nav"] a', '[class*="nav"] button', '[class*="bottom"] a', '[class*="tab"] a',
+  ];
+
+  for (const navSelector of navSelectors) {
+    try {
+      const navItems = await page.locator(navSelector).all();
+      for (const el of navItems) {
+        const isVisible = await el.isVisible().catch(() => false);
+        if (!isVisible) continue;
+
+        const text = await el.textContent().catch(() => '') || '';
+        if (!text.trim()) continue;
+
+        const tag = await el.evaluate((e) => e.tagName.toLowerCase());
+        const href = await el.getAttribute('href');
+
+        const selector = href
+          ? `a[href="${href}"]`
+          : `getByText('${text.trim().substring(0, 30)}')`;
+
+        addElement({
+          selector,
+          text: text.trim().substring(0, 50),
+          tag,
+          isClickable: true,
+          isVisible: true,
+        });
+      }
+    } catch (e) {
+      // Skip if selector not found
+    }
+  }
+
+  // 4. 카드/리스트 아이템 수집 (클릭 가능한 컨테이너)
+  const cardSelectors = [
+    '[class*="card"]', '[class*="item"]', '[class*="menu"]', '[class*="list"] > div',
+    '[class*="Card"]', '[class*="Item"]', '[class*="Menu"]',
+  ];
+
+  for (const cardSelector of cardSelectors) {
+    try {
+      const cards = await page.locator(cardSelector).all();
+      for (const el of cards) {
+        const isVisible = await el.isVisible().catch(() => false);
+        if (!isVisible) continue;
+
+        const text = await el.textContent().catch(() => '') || '';
+        if (!text.trim() || text.length > 100) continue; // 너무 긴 텍스트는 컨테이너일 가능성
+
+        const tag = await el.evaluate((e) => e.tagName.toLowerCase());
+        const testId = await el.getAttribute('data-testid');
+        const className = await el.getAttribute('class');
+
+        let selector = '';
+        if (testId) {
+          selector = `[data-testid="${testId}"]`;
+        } else if (text.trim().length < 50) {
+          selector = `getByText('${text.trim().substring(0, 30)}')`;
+        } else if (className) {
+          const mainClass = className.split(' ')[0];
+          selector = `.${mainClass}`;
+        }
+
+        if (selector) {
+          addElement({
+            selector,
+            text: text.trim().substring(0, 50),
+            tag,
+            className: className || undefined,
+            testId: testId || undefined,
+            isClickable: true,
+            isVisible: true,
+          });
+        }
+      }
+    } catch (e) {
+      // Skip if selector not found
+    }
+  }
+
+  // 5. 입력 필드 수집
   const inputs = await page.locator('input, textarea, select').all();
 
   for (const el of inputs) {
@@ -152,7 +291,7 @@ async function collectElements(page: Page): Promise<UIElement[]> {
         selector = `getByPlaceholder('${placeholder.substring(0, 30)}')`;
       }
 
-      elements.push({
+      addElement({
         selector,
         text: placeholder || name || '',
         tag,
