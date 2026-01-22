@@ -18,6 +18,20 @@ import fs from 'fs/promises';
 import path from 'path';
 import 'dotenv/config';
 
+// 사용자 상태별 테스트 계정
+interface UserAccount {
+  email: string;
+  password: string;
+  state: string;
+  description: string;
+}
+
+const TEST_ACCOUNTS: UserAccount[] = [
+  { email: 'aiqa1@aaa.com', password: 'qwer1234', state: 'registered', description: '여권/체류 등록 완료' },
+  { email: 'aiqa2@aaa.com', password: 'qwer1234', state: 'new', description: '신규 사용자' },
+  { email: 'aiqa3@aaa.com', password: 'qwer1234', state: 'new', description: '신규 사용자' },
+];
+
 interface ComparisonResult {
   page: string;
   url: string;
@@ -27,6 +41,7 @@ interface ComparisonResult {
   diffPixels: number;
   diffPercent: number;
   passed: boolean;
+  userState?: string;
 }
 
 const PAGES_TO_CAPTURE = [
@@ -41,13 +56,13 @@ const BASELINE_DIR = 'reports/visual-baseline';
 const CURRENT_DIR = 'reports/visual-current';
 const DIFF_DIR = 'reports/visual-diff';
 
-async function login(page: Page): Promise<boolean> {
+async function login(page: Page, email: string = 'aiqa1@aaa.com', password: string = 'qwer1234'): Promise<boolean> {
   try {
     await page.goto('/login');
     await page.waitForTimeout(2000);
 
-    await page.fill('#email', 'aiqa1@aaa.com');
-    await page.fill('#password', 'qwer1234');
+    await page.fill('#email', email);
+    await page.fill('#password', password);
 
     const loginBtn = page.getByRole('button', { name: /Log in|로그인/i });
     await loginBtn.click();
@@ -126,92 +141,126 @@ async function runVisualRegression(options: {
   update?: boolean;
   threshold?: number;
   report?: boolean;
+  multiState?: boolean;
+  user?: string;
 }): Promise<ComparisonResult[]> {
   const threshold = options.threshold || 0.1;
-  const results: ComparisonResult[] = [];
+  const allResults: ComparisonResult[] = [];
 
   const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({
-    baseURL: process.env.BASE_URL || 'http://qa.hirevisa.com',
-    viewport: { width: 390, height: 844 },
-  });
-  const page = await context.newPage();
 
-  try {
-    // 로그인
-    console.log('🔐 로그인 중...');
-    const loggedIn = await login(page);
+  // 탐색할 계정 목록 결정
+  let accountsToTest = [TEST_ACCOUNTS[0]]; // 기본: 첫 번째 계정
 
-    if (!loggedIn) {
-      console.error('❌ 로그인 실패');
-      return results;
+  if (options.multiState) {
+    accountsToTest = TEST_ACCOUNTS;
+  } else if (options.user) {
+    const found = TEST_ACCOUNTS.find(a => a.email.includes(options.user!));
+    if (found) {
+      accountsToTest = [found];
     }
-
-    console.log('✅ 로그인 성공\n');
-
-    if (options.update) {
-      // 기준 스크린샷 업데이트
-      console.log('📸 기준 스크린샷 업데이트 중...');
-      await captureScreenshots(page, BASELINE_DIR);
-      console.log(`\n✅ 기준 스크린샷 저장: ${BASELINE_DIR}`);
-    } else {
-      // 현재 스크린샷 캡처 및 비교
-      console.log('📸 현재 스크린샷 캡처 중...');
-      const currentScreenshots = await captureScreenshots(page, CURRENT_DIR);
-
-      console.log('\n🔍 비교 중...\n');
-      await fs.mkdir(DIFF_DIR, { recursive: true });
-
-      for (const [pageName, currentPath] of currentScreenshots) {
-        const baselinePath = path.join(BASELINE_DIR, `${pageName}.png`);
-        const diffPath = path.join(DIFF_DIR, `${pageName}-diff.png`);
-
-        try {
-          await fs.access(baselinePath);
-
-          const { diffPixels, diffPercent } = await compareImages(
-            baselinePath,
-            currentPath,
-            diffPath,
-            threshold
-          );
-
-          const passed = diffPercent <= threshold * 100;
-
-          results.push({
-            page: pageName,
-            url: PAGES_TO_CAPTURE.find((p) => p.name === pageName)?.url || '',
-            baseline: baselinePath,
-            current: currentPath,
-            diff: passed ? undefined : diffPath,
-            diffPixels,
-            diffPercent,
-            passed,
-          });
-
-          const icon = passed ? '✅' : '❌';
-          console.log(
-            `   ${icon} ${pageName}: ${diffPercent.toFixed(2)}% 차이 ${passed ? '(통과)' : '(실패)'}`
-          );
-        } catch (e) {
-          console.log(`   ⚠️ ${pageName}: 기준 스크린샷 없음 (--update 필요)`);
-          results.push({
-            page: pageName,
-            url: PAGES_TO_CAPTURE.find((p) => p.name === pageName)?.url || '',
-            baseline: baselinePath,
-            current: currentPath,
-            diffPixels: -1,
-            diffPercent: 100,
-            passed: false,
-          });
-        }
-      }
-    }
-  } finally {
-    await browser.close();
   }
 
-  return results;
+  for (const account of accountsToTest) {
+    console.log(`\n👤 계정: ${account.email} (${account.state} - ${account.description})`);
+    console.log('─'.repeat(50));
+
+    const context = await browser.newContext({
+      baseURL: process.env.BASE_URL || 'http://qa.hirevisa.com',
+      viewport: { width: 390, height: 844 },
+    });
+    const page = await context.newPage();
+
+    const results: ComparisonResult[] = [];
+
+    try {
+      // 로그인
+      console.log('🔐 로그인 중...');
+      const loggedIn = await login(page, account.email, account.password);
+
+      if (!loggedIn) {
+        console.error('❌ 로그인 실패');
+        await context.close();
+        continue;
+      }
+
+      console.log('✅ 로그인 성공\n');
+
+      // 상태별 디렉토리
+      const stateDir = options.multiState ? `/${account.state}` : '';
+      const baselineDir = `${BASELINE_DIR}${stateDir}`;
+      const currentDir = `${CURRENT_DIR}${stateDir}`;
+      const diffDir = `${DIFF_DIR}${stateDir}`;
+
+      if (options.update) {
+        // 기준 스크린샷 업데이트
+        console.log('📸 기준 스크린샷 업데이트 중...');
+        await captureScreenshots(page, baselineDir);
+        console.log(`\n✅ 기준 스크린샷 저장: ${baselineDir}`);
+      } else {
+        // 현재 스크린샷 캡처 및 비교
+        console.log('📸 현재 스크린샷 캡처 중...');
+        const currentScreenshots = await captureScreenshots(page, currentDir);
+
+        console.log('\n🔍 비교 중...\n');
+        await fs.mkdir(diffDir, { recursive: true });
+
+        for (const [pageName, currentPath] of currentScreenshots) {
+          const baselinePath = path.join(baselineDir, `${pageName}.png`);
+          const diffPath = path.join(diffDir, `${pageName}-diff.png`);
+
+          try {
+            await fs.access(baselinePath);
+
+            const { diffPixels, diffPercent } = await compareImages(
+              baselinePath,
+              currentPath,
+              diffPath,
+              threshold
+            );
+
+            const passed = diffPercent <= threshold * 100;
+
+            results.push({
+              page: pageName,
+              url: PAGES_TO_CAPTURE.find((p) => p.name === pageName)?.url || '',
+              baseline: baselinePath,
+              current: currentPath,
+              diff: passed ? undefined : diffPath,
+              diffPixels,
+              diffPercent,
+              passed,
+              userState: account.state,
+            });
+
+            const icon = passed ? '✅' : '❌';
+            console.log(
+              `   ${icon} ${pageName}: ${diffPercent.toFixed(2)}% 차이 ${passed ? '(통과)' : '(실패)'}`
+            );
+          } catch (e) {
+            console.log(`   ⚠️ ${pageName}: 기준 스크린샷 없음 (--update 필요)`);
+            results.push({
+              page: pageName,
+              url: PAGES_TO_CAPTURE.find((p) => p.name === pageName)?.url || '',
+              baseline: baselinePath,
+              current: currentPath,
+              diffPixels: -1,
+              diffPercent: 100,
+              passed: false,
+              userState: account.state,
+            });
+          }
+        }
+      }
+
+      allResults.push(...results);
+    } finally {
+      await context.close();
+    }
+  }
+
+  await browser.close();
+  return allResults;
 }
 
 function generateReport(results: ComparisonResult[]): string {
@@ -271,23 +320,41 @@ Usage:
 Options:
   --update          기준 스크린샷 업데이트
   --threshold <n>   차이 허용치 (0-1, 기본: 0.1)
+  --multi-state     여러 계정 상태로 테스트 (신규/등록완료 등)
+  --user <email>    특정 사용자로 테스트 (예: aiqa2)
   --report          diff 리포트 생성
   --help, -h        도움말
 
+등록된 테스트 계정:
+${TEST_ACCOUNTS.map(a => `  - ${a.email} (${a.state}): ${a.description}`).join('\n')}
+
 Example:
-  npx tsx scripts/visual-regression.ts --update     # 기준 스크린샷 설정
-  npx tsx scripts/visual-regression.ts --report     # 비교 및 리포트 생성
+  npx tsx scripts/visual-regression.ts --update                    # 기준 스크린샷 설정
+  npx tsx scripts/visual-regression.ts --update --multi-state      # 모든 상태별 기준 설정
+  npx tsx scripts/visual-regression.ts --report                    # 비교 및 리포트 생성
+  npx tsx scripts/visual-regression.ts --user aiqa2 --update       # 특정 계정만 업데이트
     `);
     process.exit(0);
   }
 
-  const options: { update?: boolean; threshold?: number; report?: boolean } = {};
+  const options: {
+    update?: boolean;
+    threshold?: number;
+    report?: boolean;
+    multiState?: boolean;
+    user?: string;
+  } = {};
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--update') options.update = true;
     if (args[i] === '--report') options.report = true;
+    if (args[i] === '--multi-state') options.multiState = true;
     if (args[i] === '--threshold' && args[i + 1]) {
       options.threshold = parseFloat(args[i + 1]);
+      i++;
+    }
+    if (args[i] === '--user' && args[i + 1]) {
+      options.user = args[i + 1];
       i++;
     }
   }

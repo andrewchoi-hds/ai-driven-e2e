@@ -22,6 +22,20 @@ import fs from 'fs/promises';
 import path from 'path';
 import 'dotenv/config';
 
+// 사용자 상태별 테스트 계정
+interface UserAccount {
+  email: string;
+  password: string;
+  state: string;
+  description: string;
+}
+
+const TEST_ACCOUNTS: UserAccount[] = [
+  { email: 'aiqa1@aaa.com', password: 'qwer1234', state: 'registered', description: '여권/체류 등록 완료' },
+  { email: 'aiqa2@aaa.com', password: 'qwer1234', state: 'new', description: '신규 사용자' },
+  { email: 'aiqa3@aaa.com', password: 'qwer1234', state: 'new', description: '신규 사용자' },
+];
+
 interface UIElement {
   selector: string;
   text: string;
@@ -58,13 +72,13 @@ const PAGES_TO_EXPLORE = [
   { name: 'benefit', url: '/m/benefit', requiresAuth: true },
 ];
 
-async function login(page: Page): Promise<boolean> {
+async function login(page: Page, email: string = 'aiqa1@aaa.com', password: string = 'qwer1234'): Promise<boolean> {
   try {
     await page.goto('/login');
     await page.waitForTimeout(2000);
 
-    await page.fill('#email', 'aiqa1@aaa.com');
-    await page.fill('#password', 'qwer1234');
+    await page.fill('#email', email);
+    await page.fill('#password', password);
 
     const loginBtn = page.getByRole('button', { name: /Log in|로그인/i });
     await loginBtn.click();
@@ -316,143 +330,182 @@ async function collectElements(page: Page): Promise<UIElement[]> {
   return elements;
 }
 
-async function explorePages(options: { all?: boolean; page?: string; update?: boolean; report?: boolean }) {
+async function explorePages(options: {
+  all?: boolean;
+  page?: string;
+  update?: boolean;
+  report?: boolean;
+  multiState?: boolean;
+  user?: string;
+}) {
   const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({
-    baseURL: process.env.BASE_URL || 'http://qa.hirevisa.com',
-    viewport: { width: 390, height: 844 },
-  });
-  const page = await context.newPage();
 
-  const snapshots: PageSnapshot[] = [];
-  const changes: UIChange[] = [];
+  // 탐색할 계정 목록 결정
+  let accountsToExplore = [TEST_ACCOUNTS[0]]; // 기본: 첫 번째 계정
 
-  try {
-    // 로그인
-    console.log('🔐 로그인 중...');
-    const loggedIn = await login(page);
-
-    if (!loggedIn) {
-      console.error('❌ 로그인 실패');
-      return;
+  if (options.multiState) {
+    accountsToExplore = TEST_ACCOUNTS;
+  } else if (options.user) {
+    const found = TEST_ACCOUNTS.find(a => a.email.includes(options.user!));
+    if (found) {
+      accountsToExplore = [found];
     }
+  }
 
-    console.log('✅ 로그인 성공\n');
+  const allSnapshots: PageSnapshot[] = [];
+  const allChanges: UIChange[] = [];
 
-    // 탐색할 페이지 결정
-    let pagesToExplore = PAGES_TO_EXPLORE;
+  for (const account of accountsToExplore) {
+    console.log(`\n👤 계정: ${account.email} (${account.state} - ${account.description})`);
+    console.log('─'.repeat(50));
 
-    if (options.page) {
-      pagesToExplore = [{ name: 'custom', url: options.page, requiresAuth: true }];
-    } else if (!options.all) {
-      // 기본값: 홈 페이지만
-      pagesToExplore = [PAGES_TO_EXPLORE.find((p) => p.name === 'home')!];
-    }
+    const context = await browser.newContext({
+      baseURL: process.env.BASE_URL || 'http://qa.hirevisa.com',
+      viewport: { width: 390, height: 844 },
+    });
+    const page = await context.newPage();
 
-    // 각 페이지 탐색
-    for (const pageInfo of pagesToExplore) {
-      console.log(`📄 탐색 중: ${pageInfo.name} (${pageInfo.url})`);
+    const snapshots: PageSnapshot[] = [];
+    const changes: UIChange[] = [];
 
-      try {
-        await page.goto(pageInfo.url);
-        await page.waitForTimeout(3000);
+    try {
+      // 로그인
+      console.log('🔐 로그인 중...');
+      const loggedIn = await login(page, account.email, account.password);
 
-        const title = await page.title();
-        const elements = await collectElements(page);
+      if (!loggedIn) {
+        console.error('❌ 로그인 실패');
+        await context.close();
+        continue;
+      }
 
-        // 스크린샷 저장
-        const screenshotDir = 'reports/ui-snapshots';
-        await fs.mkdir(screenshotDir, { recursive: true });
-        const screenshotPath = path.join(screenshotDir, `${pageInfo.name}-${Date.now()}.png`);
-        await page.screenshot({ path: screenshotPath, fullPage: true });
+      console.log('✅ 로그인 성공\n');
 
-        const snapshot: PageSnapshot = {
-          url: pageInfo.url,
-          title,
-          timestamp: new Date().toISOString(),
-          elements,
-          screenshot: screenshotPath,
-        };
+      // 탐색할 페이지 결정
+      let pagesToExplore = PAGES_TO_EXPLORE;
 
-        snapshots.push(snapshot);
+      if (options.page) {
+        pagesToExplore = [{ name: 'custom', url: options.page, requiresAuth: true }];
+      } else if (!options.all) {
+        // 기본값: 홈 페이지만
+        pagesToExplore = [PAGES_TO_EXPLORE.find((p) => p.name === 'home')!];
+      }
 
-        console.log(`   ✅ ${elements.length}개 요소 발견`);
-        console.log(`   📸 스크린샷: ${screenshotPath}`);
+      // 상태별 디렉토리
+      const stateDir = options.multiState ? `/${account.state}` : '';
 
-        // 기존 스냅샷과 비교
-        const previousSnapshotPath = `reports/ui-snapshots/${pageInfo.name}-latest.json`;
+      // 각 페이지 탐색
+      for (const pageInfo of pagesToExplore) {
+        console.log(`📄 탐색 중: ${pageInfo.name} (${pageInfo.url})`);
+
         try {
-          const previousData = await fs.readFile(previousSnapshotPath, 'utf-8');
-          const previous: PageSnapshot = JSON.parse(previousData);
+          await page.goto(pageInfo.url);
+          await page.waitForTimeout(3000);
 
-          // 변경 감지
-          const previousSelectors = new Set(previous.elements.map((e) => e.selector));
-          const currentSelectors = new Set(elements.map((e) => e.selector));
+          const title = await page.title();
+          const elements = await collectElements(page);
 
-          for (const el of elements) {
-            if (!previousSelectors.has(el.selector)) {
-              changes.push({
-                type: 'added',
-                element: el.text || el.selector,
-                newSelector: el.selector,
-                suggestion: `새 요소 발견: ${el.selector}`,
-              });
+          // 스크린샷 저장
+          const screenshotDir = `reports/ui-snapshots${stateDir}`;
+          await fs.mkdir(screenshotDir, { recursive: true });
+          const screenshotPath = path.join(screenshotDir, `${pageInfo.name}-${Date.now()}.png`);
+          await page.screenshot({ path: screenshotPath, fullPage: true });
+
+          const snapshot: PageSnapshot = {
+            url: pageInfo.url,
+            title,
+            timestamp: new Date().toISOString(),
+            elements,
+            screenshot: screenshotPath,
+          };
+
+          snapshots.push(snapshot);
+
+          console.log(`   ✅ ${elements.length}개 요소 발견`);
+          console.log(`   📸 스크린샷: ${screenshotPath}`);
+
+          // 기존 스냅샷과 비교
+          const previousSnapshotPath = `reports/ui-snapshots${stateDir}/${pageInfo.name}-latest.json`;
+          try {
+            const previousData = await fs.readFile(previousSnapshotPath, 'utf-8');
+            const previous: PageSnapshot = JSON.parse(previousData);
+
+            // 변경 감지
+            const previousSelectors = new Set(previous.elements.map((e) => e.selector));
+            const currentSelectors = new Set(elements.map((e) => e.selector));
+
+            for (const el of elements) {
+              if (!previousSelectors.has(el.selector)) {
+                changes.push({
+                  type: 'added',
+                  element: el.text || el.selector,
+                  newSelector: el.selector,
+                  suggestion: `새 요소 발견: ${el.selector}`,
+                });
+              }
             }
-          }
 
-          for (const el of previous.elements) {
-            if (!currentSelectors.has(el.selector)) {
-              changes.push({
-                type: 'removed',
-                element: el.text || el.selector,
-                oldSelector: el.selector,
-                suggestion: `요소 제거됨 - POM 업데이트 필요`,
-              });
+            for (const el of previous.elements) {
+              if (!currentSelectors.has(el.selector)) {
+                changes.push({
+                  type: 'removed',
+                  element: el.text || el.selector,
+                  oldSelector: el.selector,
+                  suggestion: `요소 제거됨 - POM 업데이트 필요`,
+                });
+              }
             }
+
+            if (changes.length > 0) {
+              console.log(`   ⚠️ ${changes.length}개 변경 감지!`);
+            }
+          } catch (e) {
+            console.log(`   ℹ️ 이전 스냅샷 없음 (첫 탐색)`);
           }
 
-          if (changes.length > 0) {
-            console.log(`   ⚠️ ${changes.length}개 변경 감지!`);
-          }
+          // 최신 스냅샷 저장
+          await fs.writeFile(previousSnapshotPath, JSON.stringify(snapshot, null, 2));
         } catch (e) {
-          console.log(`   ℹ️ 이전 스냅샷 없음 (첫 탐색)`);
+          console.log(`   ❌ 탐색 실패: ${e}`);
         }
 
-        // 최신 스냅샷 저장
-        await fs.writeFile(previousSnapshotPath, JSON.stringify(snapshot, null, 2));
-      } catch (e) {
-        console.log(`   ❌ 탐색 실패: ${e}`);
+        console.log('');
       }
 
-      console.log('');
-    }
+      allSnapshots.push(...snapshots);
+      allChanges.push(...changes);
 
-    // 리포트 생성
-    if (options.report) {
-      const report = generateReport(snapshots, changes);
-      const reportPath = 'reports/ui-explorer-report.md';
-      await fs.writeFile(reportPath, report);
-      console.log(`📝 리포트 생성: ${reportPath}`);
+    } finally {
+      await context.close();
     }
-
-    // 결과 요약
-    console.log('\n📊 탐색 결과 요약:');
-    console.log(`   페이지: ${snapshots.length}개`);
-    console.log(`   총 요소: ${snapshots.reduce((sum, s) => sum + s.elements.length, 0)}개`);
-    console.log(`   변경 감지: ${changes.length}개`);
-
-    if (changes.length > 0) {
-      console.log('\n⚠️ 감지된 변경:');
-      for (const change of changes.slice(0, 10)) {
-        console.log(`   ${change.type === 'added' ? '➕' : '➖'} ${change.element}`);
-      }
-      if (changes.length > 10) {
-        console.log(`   ... 외 ${changes.length - 10}개`);
-      }
-    }
-  } finally {
-    await browser.close();
   }
+
+  // 리포트 생성
+  if (options.report) {
+    const report = generateReport(allSnapshots, allChanges);
+    const reportPath = 'reports/ui-explorer-report.md';
+    await fs.writeFile(reportPath, report);
+    console.log(`📝 리포트 생성: ${reportPath}`);
+  }
+
+  // 결과 요약
+  console.log('\n📊 탐색 결과 요약:');
+  console.log(`   계정: ${accountsToExplore.length}개`);
+  console.log(`   페이지: ${allSnapshots.length}개`);
+  console.log(`   총 요소: ${allSnapshots.reduce((sum, s) => sum + s.elements.length, 0)}개`);
+  console.log(`   변경 감지: ${allChanges.length}개`);
+
+  if (allChanges.length > 0) {
+    console.log('\n⚠️ 감지된 변경:');
+    for (const change of allChanges.slice(0, 10)) {
+      console.log(`   ${change.type === 'added' ? '➕' : '➖'} ${change.element}`);
+    }
+    if (allChanges.length > 10) {
+      console.log(`   ... 외 ${allChanges.length - 10}개`);
+    }
+  }
+
+  await browser.close();
 }
 
 function generateReport(snapshots: PageSnapshot[], changes: UIChange[]): string {
@@ -521,25 +574,44 @@ Usage:
 Options:
   --page, -p <url>  특정 페이지만 탐색 (예: /m/home)
   --all             모든 주요 페이지 탐색
+  --multi-state     여러 계정 상태로 탐색 (신규/등록완료 등)
+  --user <email>    특정 사용자로 탐색 (예: aiqa2)
   --update          POM 파일 자동 업데이트
   --report          변경 리포트 생성
   --help, -h        도움말
 
+등록된 테스트 계정:
+${TEST_ACCOUNTS.map(a => `  - ${a.email} (${a.state}): ${a.description}`).join('\n')}
+
 Example:
   npx tsx scripts/ui-explorer.ts --all --report
+  npx tsx scripts/ui-explorer.ts --all --multi-state --report
+  npx tsx scripts/ui-explorer.ts --user aiqa2 --all
   npx tsx scripts/ui-explorer.ts -p /m/home
     `);
     process.exit(0);
   }
 
-  const options: { all?: boolean; page?: string; update?: boolean; report?: boolean } = {};
+  const options: {
+    all?: boolean;
+    page?: string;
+    update?: boolean;
+    report?: boolean;
+    multiState?: boolean;
+    user?: string;
+  } = {};
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--all') options.all = true;
     if (args[i] === '--update') options.update = true;
     if (args[i] === '--report') options.report = true;
+    if (args[i] === '--multi-state') options.multiState = true;
     if ((args[i] === '--page' || args[i] === '-p') && args[i + 1]) {
       options.page = args[i + 1];
+      i++;
+    }
+    if (args[i] === '--user' && args[i + 1]) {
+      options.user = args[i + 1];
       i++;
     }
   }
