@@ -168,7 +168,7 @@ tests/specs/
 | passport | passport-upload-validation.spec.ts, passport-register.spec.ts | 4개 | 여권 등록 플로우 |
 | discovery | app-explorer.spec.ts | 3개 | 앱 탐색/디스커버리 |
 
-> **총계**: 27개 파일, 184개 테스트 (2026-01-22 기준)
+> **총계**: 27개 파일, 184개 테스트 (2026-01-23 기준)
 
 
 ### 회원가입 테스트 패턴 (12개 테스트)
@@ -413,5 +413,5 @@ const uniqueEmail = `test-${Date.now()}@aaa.com`;
 
 ---
 
-*마지막 업데이트: 2026-01-22*
+*마지막 업데이트: 2026-01-23*
 *세션: 일회성 플로우 테스트 (여권, 요금제, 학교 선택, 공항 서비스) 구현*

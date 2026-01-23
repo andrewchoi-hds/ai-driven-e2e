@@ -35,16 +35,13 @@ const TEST_ACCOUNTS: UserAccount[] = [
   { email: 'aiqa2@aaa.com', password: 'qwer1234', state: 'new', description: '신규 사용자 (서류 미제출)' },
 
   // 여권 등록 완료
-  { email: 'test_ai_11@aaa.com', password: 'qwer1234', state: 'passport_registered', description: '여권 등록 완료' },
+  { email: 'state_passport_46@aaa.com', password: 'qwer1234', state: 'passport_registered', description: '여권 등록 완료' },
+
+  // 학교 선택 완료 (여권 + 학교)
+  { email: 'state_school_47@aaa.com', password: 'qwer1234', state: 'school_selected', description: '여권 + 학교 선택 완료' },
 
   // 체류만료일 등록 (연장 신청 가능)
-  { email: 'test_ai_19@aaa.com', password: 'qwer1234', state: 'stay_expiry', description: '체류만료일 등록됨 (연장 신청용)' },
-
-  // 학교 선택 완료
-  { email: 'test_ai_15@aaa.com', password: 'qwer1234', state: 'school_selected', description: '학교 선택 완료' },
-
-  // 요금제 가입 테스트용
-  { email: 'test_ai_5@aaa.com', password: 'qwer1234', state: 'plan_ready', description: '요금제 가입 테스트용' },
+  { email: 'state_expiry_48@aaa.com', password: 'qwer1234', state: 'stay_expiry', description: '여권 + 체류만료일 등록' },
 ];
 
 interface UIElement {
@@ -80,7 +77,7 @@ const PAGES_TO_EXPLORE = [
   { name: 'home', url: '/m/home', requiresAuth: true },
   { name: 'mypage', url: '/m/my', requiresAuth: true },
   { name: 'life', url: '/m/life', requiresAuth: true },
-  { name: 'benefit', url: '/m/benefit', requiresAuth: true },
+  { name: 'benefit', url: '/benefit', requiresAuth: true },
 ];
 
 async function login(page: Page, email: string = 'aiqa1@aaa.com', password: string = 'qwer1234'): Promise<boolean> {
