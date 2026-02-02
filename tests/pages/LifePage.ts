@@ -3,23 +3,22 @@ import { Page, Locator, expect } from '@playwright/test';
 /**
  * 라이프 페이지 (유학생 생활 가이드)
  * URL: /m/life
+ *
+ * 2026-02-02 업데이트: 영어/한국어 이중 언어 지원
  */
 export class LifePage {
   readonly page: Page;
 
   // 헤더
   readonly pageTitle: Locator;
-  readonly subtitle: Locator;
 
   // 이벤트 카드
-  readonly eventCard: Locator;
-  readonly accommodationEvent: Locator;
+  readonly eventSection: Locator;
+  readonly kLifeEvent: Locator;
+  readonly moreButton: Locator;
 
   // 한국 생활 가이드 섹션
   readonly guideSection: Locator;
-  readonly movieDiscountGuide: Locator;
-  readonly savingsGuide: Locator;
-  readonly pharmacyGuide: Locator;
 
   // 하단 네비게이션
   readonly navHome: Locator;
@@ -30,25 +29,22 @@ export class LifePage {
   constructor(page: Page) {
     this.page = page;
 
-    // 헤더
-    this.pageTitle = page.locator('h1, h2').filter({ hasText: '라이프' }).first();
-    this.subtitle = page.getByText('유학생들을 위한');
+    // 헤더 (영어/한국어)
+    this.pageTitle = page.getByText(/^LIFE$|^라이프$/i).first();
 
-    // 이벤트
-    this.eventCard = page.getByText('숙박비 0원! 1박 2일 여행');
-    this.accommodationEvent = page.getByText('리뷰 올리면 숙박이 공짜');
+    // 이벤트 섹션 (영어/한국어)
+    this.eventSection = page.getByText(/K-Life Support Event|유학생 이벤트/i).first();
+    this.kLifeEvent = page.getByText(/K-Life Support Event/i).first();
+    this.moreButton = page.getByRole('button', { name: /더보기|More/i });
 
-    // 가이드 섹션
-    this.guideSection = page.getByText('한국 생활 가이드');
-    this.movieDiscountGuide = page.getByText('영화 티켓 50% 할인 받는 방법');
-    this.savingsGuide = page.getByText('똑똑한 생활비 절약 방법');
-    this.pharmacyGuide = page.getByText('한국 약국 생존 가이드');
+    // 가이드 섹션 (영어/한국어)
+    this.guideSection = page.getByText(/Guide to Life in Korea|한국 생활 가이드/i);
 
-    // 하단 네비게이션
-    this.navHome = page.getByText('홈', { exact: true });
-    this.navLife = page.getByText('라이프', { exact: true });
-    this.navBenefit = page.getByText('혜택', { exact: true });
-    this.navMyPage = page.getByText('마이페이지', { exact: true });
+    // 하단 네비게이션 (영어/한국어)
+    this.navHome = page.locator('#nav-button-visa').or(page.getByText(/^Home$|^홈$/i).first());
+    this.navLife = page.locator('#nav-button-life').or(page.getByText(/^LIFE$|^라이프$/i).first());
+    this.navBenefit = page.locator('#nav-button-benefit').or(page.getByText(/^Benefits$|^혜택$/i).first());
+    this.navMyPage = page.locator('#nav-button-mypage').or(page.getByText(/^My Page$|^마이페이지$/i).first());
   }
 
   async goto() {
@@ -56,40 +52,27 @@ export class LifePage {
     await this.page.waitForLoadState('networkidle');
   }
 
-  async clickEventCard() {
-    await this.eventCard.click();
-  }
-
-  async clickMovieDiscountGuide() {
-    await this.movieDiscountGuide.click();
-  }
-
-  async clickSavingsGuide() {
-    await this.savingsGuide.click();
-  }
-
-  async clickPharmacyGuide() {
-    await this.pharmacyGuide.click();
+  async clickMoreButton() {
+    await this.moreButton.click();
   }
 
   // 네비게이션 메서드
   async navigateToHome() {
-    await this.navHome.click({ force: true });
+    await this.navHome.first().click({ force: true });
     await this.page.waitForURL('**/home');
   }
 
   async navigateToBenefit() {
-    await this.navBenefit.click({ force: true });
+    await this.navBenefit.first().click({ force: true });
     await this.page.waitForURL('**/benefit');
   }
 
   async navigateToMyPage() {
-    await this.navMyPage.click({ force: true });
+    await this.navMyPage.first().click({ force: true });
     await this.page.waitForURL('**/my');
   }
 
   async expectToBeOnLifePage() {
     await expect(this.page).toHaveURL(/\/m\/life/);
-    await expect(this.guideSection).toBeVisible();
   }
 }

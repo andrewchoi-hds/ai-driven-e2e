@@ -137,8 +137,8 @@ tests/specs/
 ├── plan            # 요금제 선택 (USIM/eSIM) - 4개 파일, 27개 테스트
 ├── mypage          # 마이페이지 - 2개 파일, 23개 테스트
 ├── stay-expiry     # stay-expiry - 2개 파일, 18개 테스트
+├── home            # 홈 페이지 (상태별 UI) - 3개 파일, 17개 테스트
 ├── arc             # arc - 1개 파일, 16개 테스트
-├── home            # 홈 페이지 (상태별 UI) - 3개 파일, 16개 테스트
 ├── school          # 학교 선택 및 정보 등록 - 1개 파일, 16개 테스트
 ├── airport         # 공항 서비스 - 1개 파일, 7개 테스트
 ├── resilience      # resilience - 1개 파일, 6개 테스트
@@ -157,8 +157,8 @@ tests/specs/
 | plan | usim-plan.spec.ts, plan-edge-cases.spec.ts, plan-complete-flow.spec.ts, esim-plan.spec.ts | 27개 | 요금제 선택 (USIM/eSIM) |
 | mypage | mypage.spec.ts, mypage-detail.spec.ts | 23개 | 마이페이지 |
 | stay-expiry | stay-expiry.spec.ts, stay-expiry-validation.spec.ts | 18개 | stay-expiry |
+| home | home.spec.ts, home-state.spec.ts, home-edge-cases.spec.ts | 17개 | 홈 페이지 (상태별 UI) |
 | arc | arc-connection-flow.spec.ts | 16개 | arc |
-| home | home.spec.ts, home-state.spec.ts, home-edge-cases.spec.ts | 16개 | 홈 페이지 (상태별 UI) |
 | school | school-selection.spec.ts | 16개 | 학교 선택 및 정보 등록 |
 | airport | airport.spec.ts | 7개 | 공항 서비스 |
 | resilience | network-errors.spec.ts | 6개 | resilience |
@@ -168,7 +168,7 @@ tests/specs/
 | passport | passport-upload-validation.spec.ts, passport-register.spec.ts | 4개 | 여권 등록 플로우 |
 | discovery | app-explorer.spec.ts | 3개 | 앱 탐색/디스커버리 |
 
-> **총계**: 27개 파일, 184개 테스트 (2026-02-02 기준)
+> **총계**: 27개 파일, 185개 테스트 (2026-02-02 기준)
 
 
 ### 회원가입 테스트 패턴 (12개 테스트)

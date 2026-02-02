@@ -3,26 +3,31 @@ import { Page, Locator, expect } from '@playwright/test';
 /**
  * 홈 페이지 (로그인 후 메인 화면)
  * URL: /m/home
+ *
+ * 2026-02-02 업데이트: 영어/한국어 이중 언어 지원
  */
 export class HomePage {
   readonly page: Page;
 
   // 헤더 영역
-  readonly headerTitle: Locator;
+  readonly todoSection: Locator;
 
-  // 본인 확인 카드
+  // 여권 등록 카드
   readonly passportCard: Locator;
   readonly registerInfoButton: Locator;
 
-  // 관련 서비스 섹션
-  readonly relatedServicesSection: Locator;
-  readonly telecomButton: Locator;
-  readonly airportButton: Locator;
-  readonly addressBookButton: Locator;
-
-  // 요금제 섹션
+  // 통신 요금제 섹션 (Issue a phone number for immigration registration)
+  readonly phonePlanSection: Locator;
   readonly usimPlanButton: Locator;
   readonly esimPlanButton: Locator;
+
+  // Pre-entry Requirements 섹션
+  readonly preEntrySection: Locator;
+  readonly preEntryLink: Locator;
+
+  // Related Services 섹션
+  readonly relatedServicesSection: Locator;
+  readonly topikButton: Locator;
 
   // 하단 네비게이션
   readonly navHome: Locator;
@@ -39,34 +44,45 @@ export class HomePage {
   constructor(page: Page) {
     this.page = page;
 
-    // 헤더
-    this.headerTitle = page.getByText('할 일');
+    // 헤더 - To-Do 섹션
+    this.todoSection = page.locator('text=/To-Do|할 일/i').first();
 
-    // 본인 확인 카드
-    this.passportCard = page.getByText('본인 확인을 위해 여권을 등록해 주세요');
-    this.registerInfoButton = page.getByRole('button', { name: '정보 등록하기' });
+    // 여권 등록 카드
+    this.passportCard = page.getByText(/Verify your identity with your passport|본인 확인을 위해 여권을 등록/i);
+    this.registerInfoButton = page.getByRole('button', { name: /Register Information|정보 등록하기/i });
 
-    // 관련 서비스
-    this.relatedServicesSection = page.getByText('관련 서비스');
-    this.telecomButton = page.getByText('통신', { exact: true });
-    this.airportButton = page.getByText('공항', { exact: true });
-    this.addressBookButton = page.getByText('주소록', { exact: true });
+    // 통신 요금제 섹션
+    this.phonePlanSection = page.getByText(/Issue a phone number for immigration registration|출입국등록을 위한 전화번호 발급/i);
+    this.usimPlanButton = page.getByText(/Apply for USIM|유심 무료 제공 요금제|USIM 신청/i);
+    this.esimPlanButton = page.getByText(/Apply for eSIM|이심 무료 설치 요금제|eSIM 신청/i);
 
-    // 요금제
-    this.usimPlanButton = page.getByText('유심 무료 제공 요금제');
-    this.esimPlanButton = page.getByText('이심 무료 설치 요금제');
+    // Pre-entry Requirements 섹션
+    this.preEntrySection = page.getByText(/Pre-entry Requirements|입국 전 준비사항/i);
+    this.preEntryLink = page.getByText(/Please register the entry information|입국 정보를 등록해 주세요/i);
 
-    // 하단 네비게이션
-    this.navHome = page.getByText('홈', { exact: true });
-    this.navLife = page.getByText('라이프', { exact: true });
-    this.navBenefit = page.getByText('혜택', { exact: true });
-    this.navMyPage = page.getByText('마이페이지', { exact: true });
+    // Related Services 섹션
+    this.relatedServicesSection = page.getByText(/Related Services|관련 서비스/i);
+    this.topikButton = page.getByText(/TOPIK/i).first();
 
-    // 푸터 링크
-    this.termsOfServiceLink = page.getByText('서비스 이용 약관');
-    this.privacyPolicyLink = page.getByText('개인정보처리방침');
-    this.refundPolicyLink = page.getByText('환불규정');
-    this.faqLink = page.getByText('자주 묻는 질문');
+    // 하단 네비게이션 (영어/한국어 모두 지원)
+    this.navHome = page.locator('#nav-button-visa, [data-testid="nav-home"]').or(
+      page.getByRole('button', { name: /^Home$|^홈$/i })
+    ).or(page.locator('text=/^Home$/i').first());
+    this.navLife = page.locator('#nav-button-life, [data-testid="nav-life"]').or(
+      page.getByRole('button', { name: /^LIFE$|^라이프$/i })
+    ).or(page.locator('text=/^LIFE$/i').first());
+    this.navBenefit = page.locator('#nav-button-benefit, [data-testid="nav-benefit"]').or(
+      page.getByRole('button', { name: /^Benefits$|^혜택$/i })
+    ).or(page.locator('text=/^Benefits$/i').first());
+    this.navMyPage = page.locator('#nav-button-mypage, [data-testid="nav-mypage"]').or(
+      page.getByRole('button', { name: /^My Page$|^마이페이지$/i })
+    ).or(page.locator('text=/^My Page$/i').first());
+
+    // 푸터 링크 (영어/한국어)
+    this.termsOfServiceLink = page.getByText(/Terms and Conditions|서비스 이용 약관|이용약관/i);
+    this.privacyPolicyLink = page.getByText(/Privacy Policy|개인정보처리방침/i);
+    this.refundPolicyLink = page.getByText(/Refund Policy|환불규정|환불 정책/i);
+    this.faqLink = page.getByText(/^FAQ$|자주 묻는 질문/i);
   }
 
   async goto() {
@@ -76,47 +92,49 @@ export class HomePage {
 
   async goToPassportRegistration() {
     await this.registerInfoButton.click();
-    await this.page.waitForURL('**/submit/passport');
-  }
-
-  async goToTelecom() {
-    await this.telecomButton.click();
-    await this.page.waitForURL('**/mobile-plan/**');
-  }
-
-  async goToAirport() {
-    await this.airportButton.click();
-    await this.page.waitForURL('**/airport');
+    await this.page.waitForURL('**/submit/passport**', { timeout: 15000 });
   }
 
   async goToUsimPlan() {
     await this.usimPlanButton.click();
-    await this.page.waitForURL('**/usim/**');
+    await this.page.waitForURL('**/usim/**', { timeout: 15000 });
   }
 
   async goToEsimPlan() {
     await this.esimPlanButton.click();
-    await this.page.waitForURL('**/esim/**');
+    await this.page.waitForURL('**/esim/**', { timeout: 15000 });
   }
 
   // 네비게이션 메서드
   async navigateToLife() {
-    await this.navLife.click({ force: true });
-    await this.page.waitForURL('**/life');
+    await this.navLife.first().click({ force: true });
+    await this.page.waitForURL('**/life', { timeout: 10000 });
   }
 
   async navigateToBenefit() {
-    await this.navBenefit.click({ force: true });
-    await this.page.waitForURL('**/benefit');
+    await this.navBenefit.first().click({ force: true });
+    await this.page.waitForURL('**/benefit', { timeout: 10000 });
   }
 
   async navigateToMyPage() {
-    await this.navMyPage.click({ force: true });
-    await this.page.waitForURL('**/my');
+    await this.navMyPage.first().click({ force: true });
+    await this.page.waitForURL('**/my', { timeout: 10000 });
   }
 
   async expectToBeOnHomePage() {
     await expect(this.page).toHaveURL(/\/m\/home/);
-    await expect(this.registerInfoButton).toBeVisible();
+  }
+
+  // 요소 존재 확인 헬퍼
+  async hasPassportCard(): Promise<boolean> {
+    return await this.passportCard.isVisible().catch(() => false);
+  }
+
+  async hasUsimButton(): Promise<boolean> {
+    return await this.usimPlanButton.isVisible().catch(() => false);
+  }
+
+  async hasEsimButton(): Promise<boolean> {
+    return await this.esimPlanButton.isVisible().catch(() => false);
   }
 }

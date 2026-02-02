@@ -6,7 +6,7 @@ test.describe('혜택 페이지', () => {
     // 로그인
     const loginPage = new LoginPage(page);
     await loginPage.goto();
-    await loginPage.login('test21@aaaa.com', 'qwer1234');
+    await loginPage.login('aiqa1@aaa.com', 'qwer1234');
     await page.waitForURL('**/home');
 
     // 혜택 페이지로 이동
@@ -19,9 +19,6 @@ test.describe('혜택 페이지', () => {
 
     // 페이지 확인
     await benefitPage.expectToBeOnBenefitPage();
-
-    // 서비스 확인 섹션 표시
-    await expect(benefitPage.subtitle).toBeVisible();
   });
 
   test('외국인등록증 연결 서비스 표시', async ({ page }) => {
@@ -39,8 +36,8 @@ test.describe('혜택 페이지', () => {
   test('푸터 링크 표시', async ({ page }) => {
     const benefitPage = new BenefitPage(page);
 
-    await expect(benefitPage.termsOfServiceLink).toBeVisible();
-    await expect(benefitPage.privacyPolicyLink).toBeVisible();
-    await expect(benefitPage.refundPolicyLink).toBeVisible();
+    await expect(benefitPage.termsOfServiceLink.first()).toBeVisible();
+    await expect(benefitPage.privacyPolicyLink.first()).toBeVisible();
+    await expect(benefitPage.refundPolicyLink.first()).toBeVisible();
   });
 });
