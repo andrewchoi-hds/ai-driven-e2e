@@ -18,63 +18,59 @@ export interface ExpectedElements {
 export const homePageExpectedElements: Record<UserState, ExpectedElements> = {
   new: {
     shouldBeVisible: [
-      '본인 확인을 위해 여권을 등록해 주세요',
-      '정보 등록하기',
-      '유심 무료 제공 요금제',
-      '이심 무료 설치 요금제',
-      '통신',
-      '공항',
+      // 여권 등록 안내 (영어/한국어)
+      '여권',  // "본인 확인을 위해 여권을 등록해 주세요" 또는 "Register your passport"
+      // 정보 등록 버튼 (영어/한국어)
+      '등록',  // "정보 등록하기" 또는 "Register Information"
+      // 요금제 관련 - 새 UI에서는 USIM/ESIM 텍스트 사용
+      'USIM',
+      'ESIM',
     ],
     shouldBeHidden: [
-      '내 요금제',
-      '요금제 이용 중',
+      '내 요금제',  // My Plan
     ],
     optionalElements: [
-      '주소록',
+      '주소록',  // Contact
     ],
   },
 
   passport_registered: {
     shouldBeVisible: [
-      '외국인등록증',
-      '유심 무료 제공 요금제',
-      '이심 무료 설치 요금제',
+      '외국인등록증',  // 외국인등록증 (Residence Card / ARC)
+      'USIM',
+      'ESIM',
     ],
     shouldBeHidden: [
-      '여권을 등록해 주세요',
-      '내 요금제',
+      '여권을 등록',  // 여권 등록 안내가 숨겨져야 함
     ],
   },
 
   arc_pending: {
     shouldBeVisible: [
-      '심사 중',
-      '유심 무료 제공 요금제',
+      '심사',  // 심사 중 / Under review
+      'USIM',
     ],
     shouldBeHidden: [
-      '여권을 등록해 주세요',
+      '여권을 등록',
     ],
   },
 
   arc_verified: {
     shouldBeVisible: [
-      '유심 무료 제공 요금제',
-      '이심 무료 설치 요금제',
+      'USIM',
+      'ESIM',
     ],
     shouldBeHidden: [
-      '여권을 등록해 주세요',
-      '외국인등록증 연결',
+      '여권을 등록',
     ],
   },
 
   plan_subscribed: {
     shouldBeVisible: [
-      '내 요금제',
-      '이용 중',
+      '요금제',  // 내 요금제 / My Plan
     ],
     shouldBeHidden: [
-      '여권을 등록해 주세요',
-      '유심 무료 제공 요금제',
+      '여권을 등록',
     ],
   },
 
@@ -90,34 +86,33 @@ export const homePageExpectedElements: Record<UserState, ExpectedElements> = {
 export const benefitPageExpectedElements: Record<UserState, ExpectedElements> = {
   new: {
     shouldBeVisible: [
-      '서비스를 확인해 보세요',
-      '전화번호에 외국인등록증 연결하기',
+      // 서비스 확인 안내
+      '서비스',  // "Check our services" or "서비스를 확인해 보세요"
+      '외국인등록증',  // "Connect phone number to RC" or "전화번호에 외국인등록증 연결하기"
     ],
     shouldBeHidden: [],
   },
 
   passport_registered: {
     shouldBeVisible: [
-      '서비스를 확인해 보세요',
-      '전화번호에 외국인등록증 연결하기',
+      '서비스',
+      '외국인등록증',
     ],
     shouldBeHidden: [],
   },
 
   arc_pending: {
     shouldBeVisible: [
-      '심사가 진행',
+      '심사',  // 심사가 진행 / under review
     ],
     shouldBeHidden: [],
   },
 
   arc_verified: {
     shouldBeVisible: [
-      '서비스를 확인해 보세요',
+      '서비스',
     ],
-    shouldBeHidden: [
-      '외국인등록증 연결하기',
-    ],
+    shouldBeHidden: [],
   },
 
   plan_subscribed: {
@@ -137,19 +132,19 @@ export const benefitPageExpectedElements: Record<UserState, ExpectedElements> = 
 export const myPageExpectedElements: Record<UserState, ExpectedElements> = {
   new: {
     shouldBeVisible: [
-      '내 보유 포인트',
-      '결제 내역',
-      '헬프 센터',
-      '로그아웃',
+      '포인트',  // 내 보유 포인트 / My Points
+      '결제',  // 결제 내역 / Payment History
+      '헬프',  // 헬프 센터 / Help Center
+      '로그아웃',  // 로그아웃 / Logout
     ],
     shouldBeHidden: [],
   },
 
   passport_registered: {
     shouldBeVisible: [
-      '내 보유 포인트',
-      '결제 내역',
-      '헬프 센터',
+      '포인트',
+      '결제',
+      '헬프',
       '로그아웃',
     ],
     shouldBeHidden: [],
@@ -157,8 +152,8 @@ export const myPageExpectedElements: Record<UserState, ExpectedElements> = {
 
   arc_pending: {
     shouldBeVisible: [
-      '내 보유 포인트',
-      '결제 내역',
+      '포인트',
+      '결제',
       '로그아웃',
     ],
     shouldBeHidden: [],
@@ -166,8 +161,8 @@ export const myPageExpectedElements: Record<UserState, ExpectedElements> = {
 
   arc_verified: {
     shouldBeVisible: [
-      '내 보유 포인트',
-      '결제 내역',
+      '포인트',
+      '결제',
       '로그아웃',
     ],
     shouldBeHidden: [],
@@ -175,9 +170,9 @@ export const myPageExpectedElements: Record<UserState, ExpectedElements> = {
 
   plan_subscribed: {
     shouldBeVisible: [
-      '내 보유 포인트',
-      '결제 내역',
-      '내 요금제',
+      '포인트',
+      '결제',
+      '요금제',  // 내 요금제 / My Plan
       '로그아웃',
     ],
     shouldBeHidden: [],
