@@ -31,7 +31,7 @@ test.describe('ARC 외국인등록증 연결 플로우', () => {
   test.beforeEach(async ({ page }) => {
     const loginPage = new LoginPage(page);
     await loginPage.goto();
-    await loginPage.login('test21@aaaa.com', 'qwer1234');
+    await loginPage.login('aiqa1@aaa.com', 'qwer1234');
     await page.waitForURL('**/home');
   });
 
@@ -43,8 +43,8 @@ test.describe('ARC 외국인등록증 연결 플로우', () => {
     const benefitPage = new BenefitPage(page);
     await benefitPage.expectToBeOnBenefitPage();
 
-    // 외국인등록증 연결하기 링크 확인
-    const arcLink = page.getByText('전화번호에 외국인등록증 연결하기');
+    // 외국인등록증 연결하기 링크 확인 (영어/한국어)
+    const arcLink = page.getByText(/전화번호에 외국인등록증 연결하기|Connect phone number to RC/i);
     await expect(arcLink).toBeVisible();
 
     console.log('✅ 외국인등록증 연결하기 링크 발견');

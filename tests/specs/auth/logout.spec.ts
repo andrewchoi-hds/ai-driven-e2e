@@ -17,7 +17,7 @@ test.describe('로그아웃 기능', () => {
     // 로그인
     const loginPage = new LoginPage(page);
     await loginPage.goto();
-    await loginPage.login('test21@aaaa.com', 'qwer1234');
+    await loginPage.login('aiqa1@aaa.com', 'qwer1234');
     await page.waitForURL('**/home');
 
     console.log('✅ 로그인 성공');
@@ -87,7 +87,7 @@ test.describe('로그아웃 기능', () => {
     // 로그인
     const loginPage = new LoginPage(page);
     await loginPage.goto();
-    await loginPage.login('test21@aaaa.com', 'qwer1234');
+    await loginPage.login('aiqa1@aaa.com', 'qwer1234');
     await page.waitForURL('**/home');
 
     console.log('Step 1: 첫 번째 로그인 성공');
@@ -103,7 +103,7 @@ test.describe('로그아웃 기능', () => {
     console.log('Step 2: 로그아웃 성공');
 
     // 재로그인
-    await loginPage.login('test21@aaaa.com', 'qwer1234');
+    await loginPage.login('aiqa1@aaa.com', 'qwer1234');
     await page.waitForURL('**/home');
 
     console.log('Step 3: 재로그인 성공');
@@ -123,7 +123,7 @@ test.describe('로그아웃 기능', () => {
     // 로그인
     const loginPage = new LoginPage(page);
     await loginPage.goto();
-    await loginPage.login('test21@aaaa.com', 'qwer1234');
+    await loginPage.login('aiqa1@aaa.com', 'qwer1234');
     await page.waitForURL('**/home');
 
     // 마이페이지로 이동
@@ -183,7 +183,7 @@ test.describe('로그아웃 기능', () => {
     // 로그인
     const loginPage = new LoginPage(page);
     await loginPage.goto();
-    await loginPage.login('test21@aaaa.com', 'qwer1234');
+    await loginPage.login('aiqa1@aaa.com', 'qwer1234');
     await page.waitForURL('**/home');
 
     // 로그인 후 스토리지 상태 확인

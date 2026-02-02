@@ -18,8 +18,8 @@ test.describe('요금제 완전 플로우 탐색', () => {
   });
 
   test('USIM 요금제 전체 플로우 탐색', async ({ page }) => {
-    // 홈에서 USIM 요금제 버튼 클릭
-    const usimBtn = page.getByText('Mobile plan with free USIM');
+    // 홈에서 USIM 요금제 버튼 클릭 (영어/한국어)
+    const usimBtn = page.getByText(/Apply for USIM|Mobile plan with free USIM|유심 무료 제공 요금제|USIM 신청|USIM으로 발급받기/i).first();
 
     if (!(await usimBtn.isVisible().catch(() => false))) {
       console.log('USIM 버튼 없음 - 직접 URL 접근');
@@ -37,7 +37,7 @@ test.describe('요금제 완전 플로우 탐색', () => {
     console.log('Step 1 URL:', page.url());
 
     // Step 1: 체류 기간 선택
-    const stayDuration = page.getByText('6 months or longer');
+    const stayDuration = page.getByText(/6 months or longer|6개월 이상/i);
     if (await stayDuration.isVisible().catch(() => false)) {
       console.log('Step 1: 체류 기간 선택 페이지');
       await stayDuration.click();
@@ -104,7 +104,7 @@ test.describe('요금제 완전 플로우 탐색', () => {
   });
 
   test('eSIM 요금제 전체 플로우 탐색', async ({ page }) => {
-    const esimBtn = page.getByText('Free eSIM Mobile Plan');
+    const esimBtn = page.getByText(/Apply for eSIM|Free eSIM Mobile Plan|이심 무료 설치 요금제|eSIM 신청|ESIM으로 발급받기/i).first();
 
     if (!(await esimBtn.isVisible().catch(() => false))) {
       console.log('eSIM 버튼 없음 - 직접 URL 접근');
@@ -122,7 +122,7 @@ test.describe('요금제 완전 플로우 탐색', () => {
     console.log('Step 1 URL:', page.url());
 
     // Step 1: 체류 기간 선택
-    const stayDuration = page.getByText('6 months or longer');
+    const stayDuration = page.getByText(/6 months or longer|6개월 이상/i);
     if (await stayDuration.isVisible().catch(() => false)) {
       console.log('Step 1: 체류 기간 선택');
       await stayDuration.click();
@@ -521,7 +521,7 @@ test.describe('요금제 가입 완료 플로우 (신규 계정)', () => {
     console.log(`테스트 계정: ${testEmail}`);
 
     // 홈에서 USIM 버튼 클릭
-    const usimBtn = page.getByText('Mobile plan with free USIM');
+    const usimBtn = page.getByText(/Apply for USIM|Mobile plan with free USIM|유심 무료 제공 요금제|USIM 신청|USIM으로 발급받기/i).first();
     await expect(usimBtn).toBeVisible({ timeout: 10000 });
     await usimBtn.click();
     await page.waitForTimeout(2000);

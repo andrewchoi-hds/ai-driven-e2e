@@ -65,18 +65,11 @@ export class HomePage {
     this.topikButton = page.getByText(/TOPIK/i).first();
 
     // 하단 네비게이션 (영어/한국어 모두 지원)
-    this.navHome = page.locator('#nav-button-visa, [data-testid="nav-home"]').or(
-      page.getByRole('button', { name: /^Home$|^홈$/i })
-    ).or(page.locator('text=/^Home$/i').first());
-    this.navLife = page.locator('#nav-button-life, [data-testid="nav-life"]').or(
-      page.getByRole('button', { name: /^LIFE$|^라이프$/i })
-    ).or(page.locator('text=/^LIFE$/i').first());
-    this.navBenefit = page.locator('#nav-button-benefit, [data-testid="nav-benefit"]').or(
-      page.getByRole('button', { name: /^Benefits$|^혜택$/i })
-    ).or(page.locator('text=/^Benefits$/i').first());
-    this.navMyPage = page.locator('#nav-button-mypage, [data-testid="nav-mypage"]').or(
-      page.getByRole('button', { name: /^My Page$|^마이페이지$/i })
-    ).or(page.locator('text=/^My Page$/i').first());
+    // 실제 UI는 generic div 안에 텍스트가 있는 구조
+    this.navHome = page.getByText(/^Home$|^홈$/i).first();
+    this.navLife = page.getByText(/^LIFE$|^라이프$/i).first();
+    this.navBenefit = page.getByText(/^Benefits$|^혜택$/i).first();
+    this.navMyPage = page.getByText(/^My Page$|^마이페이지$/i).first();
 
     // 푸터 링크 (영어/한국어)
     this.termsOfServiceLink = page.getByText(/Terms and Conditions|서비스 이용 약관|이용약관/i);

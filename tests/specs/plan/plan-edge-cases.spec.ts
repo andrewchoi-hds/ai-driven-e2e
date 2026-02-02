@@ -19,7 +19,7 @@ test.describe('요금제 선택 Edge Case', () => {
   test.describe('체류 기간 선택 검증', () => {
     test('체류 기간 미선택 시 next 버튼 비활성화', async ({ page }) => {
       // USIM 요금제 버튼 클릭
-      const usimBtn = page.getByText('Mobile plan with free USIM');
+      const usimBtn = page.getByText(/Apply for USIM|Mobile plan with free USIM|유심 무료 제공 요금제|USIM 신청|USIM으로 발급받기/i).first();
 
       if (await usimBtn.isVisible().catch(() => false)) {
         await usimBtn.click();
@@ -45,7 +45,7 @@ test.describe('요금제 선택 Edge Case', () => {
     });
 
     test('체류 기간 선택 후 변경 가능 확인', async ({ page }) => {
-      const usimBtn = page.getByText('Mobile plan with free USIM');
+      const usimBtn = page.getByText(/Apply for USIM|Mobile plan with free USIM|유심 무료 제공 요금제|USIM 신청|USIM으로 발급받기/i).first();
 
       if (await usimBtn.isVisible().catch(() => false)) {
         await usimBtn.click();
@@ -74,7 +74,7 @@ test.describe('요금제 선택 Edge Case', () => {
     });
 
     test('6개월 이상 vs 미만 선택 시 다른 요금제 표시', async ({ page }) => {
-      const usimBtn = page.getByText('Mobile plan with free USIM');
+      const usimBtn = page.getByText(/Apply for USIM|Mobile plan with free USIM|유심 무료 제공 요금제|USIM 신청|USIM으로 발급받기/i).first();
 
       if (await usimBtn.isVisible().catch(() => false)) {
         await usimBtn.click();
@@ -116,7 +116,7 @@ test.describe('요금제 선택 Edge Case', () => {
 
   test.describe('네비게이션 동작', () => {
     test('뒤로가기 버튼 동작 확인', async ({ page }) => {
-      const usimBtn = page.getByText('Mobile plan with free USIM');
+      const usimBtn = page.getByText(/Apply for USIM|Mobile plan with free USIM|유심 무료 제공 요금제|USIM 신청|USIM으로 발급받기/i).first();
 
       if (await usimBtn.isVisible().catch(() => false)) {
         await usimBtn.click();
@@ -147,7 +147,7 @@ test.describe('요금제 선택 Edge Case', () => {
     });
 
     test('페이지 새로고침 시 선택 상태 처리', async ({ page }) => {
-      const usimBtn = page.getByText('Mobile plan with free USIM');
+      const usimBtn = page.getByText(/Apply for USIM|Mobile plan with free USIM|유심 무료 제공 요금제|USIM 신청|USIM으로 발급받기/i).first();
 
       if (await usimBtn.isVisible().catch(() => false)) {
         await usimBtn.click();
@@ -190,7 +190,7 @@ test.describe('요금제 선택 Edge Case', () => {
     });
 
     test('USIM과 eSIM 버튼이 모두 있는 경우 구분 확인', async ({ page }) => {
-      const usimBtn = page.getByText('Mobile plan with free USIM');
+      const usimBtn = page.getByText(/Apply for USIM|Mobile plan with free USIM|유심 무료 제공 요금제|USIM 신청|USIM으로 발급받기/i).first();
       const esimBtn = page.getByText(/eSIM|e-SIM/i);
 
       const usimVisible = await usimBtn.isVisible().catch(() => false);

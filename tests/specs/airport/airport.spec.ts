@@ -8,6 +8,8 @@ import {
  * 공항 서비스 테스트
  *
  * 공항 서비스 페이지 및 기능을 테스트합니다.
+ *
+ * 참고: 현재 홈 화면에서 Airport 버튼이 제거되어 직접 URL 접근 방식으로 테스트
  */
 test.describe('공항 서비스', () => {
   test.describe.configure({ mode: 'serial' });
@@ -24,18 +26,22 @@ test.describe('공항 서비스', () => {
     await expect(page).toHaveURL(/\/(home|login)/);
   });
 
-  test('홈에서 Airport 버튼 확인', async ({ page }) => {
+  test.skip('홈에서 Airport 버튼 확인', async ({ page }) => {
+    // 참고: Airport 버튼이 홈 화면에서 제거됨 (2026-02 UI 변경)
     await loginWithAccount(page, testEmail, testPassword);
 
-    // Airport 버튼 확인
-    const airportBtn = page.getByText('Airport').first();
-    await expect(airportBtn).toBeVisible({ timeout: 10000 });
+    // Airport 버튼 확인 (더 이상 홈에서 표시되지 않음)
+    const airportBtn = page.getByText(/Airport|공항/i).first();
+    const isVisible = await airportBtn.isVisible().catch(() => false);
 
-    // 클릭하여 공항 서비스 페이지로 이동
+    if (!isVisible) {
+      console.log('ℹ️ Airport 버튼이 홈에서 제거됨 - 테스트 스킵');
+      test.skip();
+      return;
+    }
+
     await airportBtn.click();
     await page.waitForTimeout(2000);
-
-    // URL 확인
     await expect(page).toHaveURL(/\/airport/);
   });
 

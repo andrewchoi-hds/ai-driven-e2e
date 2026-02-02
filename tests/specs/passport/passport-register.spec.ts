@@ -44,8 +44,8 @@ test.describe('여권 등록 플로우', () => {
     // 기존 계정으로 로그인
     await loginWithAccount(page, testEmail, testPassword);
 
-    // 홈 페이지에서 여권 등록 버튼 확인
-    const registerBtn = page.getByText('Register Information');
+    // 홈 페이지에서 여권 등록 버튼 확인 (영어/한국어)
+    const registerBtn = page.getByText(/Register Information|정보 등록하기/i);
     await expect(registerBtn).toBeVisible({ timeout: 10000 });
 
     // 버튼 클릭하여 여권 등록 페이지로 이동

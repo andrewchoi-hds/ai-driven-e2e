@@ -140,10 +140,10 @@ tests/specs/
 ├── home            # 홈 페이지 (상태별 UI) - 3개 파일, 17개 테스트
 ├── arc             # arc - 1개 파일, 16개 테스트
 ├── school          # 학교 선택 및 정보 등록 - 1개 파일, 16개 테스트
-├── airport         # 공항 서비스 - 1개 파일, 7개 테스트
 ├── resilience      # resilience - 1개 파일, 6개 테스트
 ├── life            # Life 콘텐츠 - 1개 파일, 5개 테스트
 ├── navigation      # 하단 네비게이션 - 1개 파일, 5개 테스트
+├── airport         # 공항 서비스 - 1개 파일, 4개 테스트
 ├── benefit         # Benefit 페이지 - 1개 파일, 4개 테스트
 ├── passport        # 여권 등록 플로우 - 2개 파일, 4개 테스트
 ├── discovery       # 앱 탐색/디스커버리 - 1개 파일, 3개 테스트
@@ -160,15 +160,15 @@ tests/specs/
 | home | home.spec.ts, home-state.spec.ts, home-edge-cases.spec.ts | 17개 | 홈 페이지 (상태별 UI) |
 | arc | arc-connection-flow.spec.ts | 16개 | arc |
 | school | school-selection.spec.ts | 16개 | 학교 선택 및 정보 등록 |
-| airport | airport.spec.ts | 7개 | 공항 서비스 |
 | resilience | network-errors.spec.ts | 6개 | resilience |
 | life | life.spec.ts | 5개 | Life 콘텐츠 |
 | navigation | navigation.spec.ts | 5개 | 하단 네비게이션 |
+| airport | airport.spec.ts | 4개 | 공항 서비스 |
 | benefit | benefit.spec.ts | 4개 | Benefit 페이지 |
 | passport | passport-upload-validation.spec.ts, passport-register.spec.ts | 4개 | 여권 등록 플로우 |
 | discovery | app-explorer.spec.ts | 3개 | 앱 탐색/디스커버리 |
 
-> **총계**: 27개 파일, 185개 테스트 (2026-02-02 기준)
+> **총계**: 27개 파일, 182개 테스트 (2026-02-02 기준)
 
 
 ### 회원가입 테스트 패턴 (12개 테스트)
