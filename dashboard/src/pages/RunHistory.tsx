@@ -9,6 +9,8 @@ import {
   ChevronRight,
   Loader2,
   Trash2,
+  Terminal,
+  Monitor,
 } from 'lucide-react';
 import {
   LineChart,
@@ -187,6 +189,17 @@ function RunCard({ run, expanded, onToggle }: RunCardProps) {
               <span className="flex items-center gap-1">
                 <Clock className="w-4 h-4" />
                 {new Date(run.timestamp).toLocaleTimeString('ko-KR')}
+              </span>
+              <span className={`flex items-center gap-1 px-2 py-0.5 rounded text-xs ${
+                run.source === 'cli'
+                  ? 'bg-purple-100 text-purple-700'
+                  : 'bg-blue-100 text-blue-700'
+              }`}>
+                {run.source === 'cli' ? (
+                  <><Terminal className="w-3 h-3" /> CLI</>
+                ) : (
+                  <><Monitor className="w-3 h-3" /> Dashboard</>
+                )}
               </span>
             </div>
             <div className="flex items-center gap-4 mt-1">

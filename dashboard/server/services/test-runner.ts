@@ -26,6 +26,7 @@ interface RunSummary {
   skipped: number;
   duration: number;
   results: TestResult[];
+  source?: 'cli' | 'dashboard';
 }
 
 export class TestRunner {
@@ -179,6 +180,7 @@ export class TestRunner {
       skipped,
       duration,
       results,
+      source: 'dashboard',
     };
 
     await this.saveToHistory(summary);

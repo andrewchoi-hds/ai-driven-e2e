@@ -50,6 +50,7 @@ export interface RunSummary {
   skipped: number;
   duration: number;
   results: TestResult[];
+  source?: 'cli' | 'dashboard';
 }
 
 export interface ModuleStats {

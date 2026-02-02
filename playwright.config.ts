@@ -13,6 +13,7 @@ export default defineConfig({
     ['html', { outputFolder: 'reports/html-report' }],
     ['json', { outputFile: 'reports/test-results.json' }],
     ['allure-playwright', { outputFolder: 'allure-results' }],
+    ['./tests/reporters/history-reporter.ts'],  // 대시보드 히스토리 연동
   ],
   use: {
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
