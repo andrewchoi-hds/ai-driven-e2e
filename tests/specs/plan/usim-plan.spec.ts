@@ -5,6 +5,9 @@ import {
   updateAccountState,
 } from '../../fixtures/test-account-manager';
 
+// USIM 버튼 찾기 (영어/한국어 모두 지원)
+const getUsimButton = (page: any) => page.getByText(/Apply for USIM|Mobile plan with free USIM|유심 무료 제공 요금제|USIM 신청|USIM으로 발급받기/i).first();
+
 /**
  * USIM 요금제 선택 플로우 테스트
  *
@@ -28,8 +31,8 @@ test.describe('USIM 요금제 플로우', () => {
   test('홈에서 USIM 요금제 버튼 확인', async ({ page }) => {
     await loginWithAccount(page, testEmail, testPassword);
 
-    // Mobile plan with free USIM 버튼 확인
-    const usimBtn = page.getByText('Mobile plan with free USIM');
+    // USIM 버튼 확인 (영어/한국어)
+    const usimBtn = getUsimButton(page);
     await expect(usimBtn).toBeVisible({ timeout: 10000 });
 
     // 클릭하여 요금제 페이지로 이동
@@ -37,25 +40,25 @@ test.describe('USIM 요금제 플로우', () => {
     await page.waitForTimeout(2000);
 
     // URL 확인
-    await expect(page).toHaveURL(/\/plan|\/usim/);
+    await expect(page).toHaveURL(/\/plan|\/usim|\/mobile-plan/);
   });
 
   test('USIM 요금제 페이지 요소 확인', async ({ page }) => {
     await loginWithAccount(page, testEmail, testPassword);
 
     // USIM 요금제 페이지로 이동
-    const usimBtn = page.getByText('Mobile plan with free USIM');
+    const usimBtn = getUsimButton(page);
     if (await usimBtn.isVisible()) {
       await usimBtn.click();
       await page.waitForTimeout(2000);
     }
 
-    // Step 1: 체류 기간 선택 페이지 확인
-    await expect(page.getByText('Please indicate how long you will stay in Korea')).toBeVisible();
+    // Step 1: 체류 기간 선택 페이지 확인 (영어/한국어)
+    await expect(page.getByText(/Please indicate how long you will stay in Korea|한국에 얼마나 머무르는지 알려주세요/i)).toBeVisible();
 
-    // 옵션 확인
-    await expect(page.getByText('6 months or longer')).toBeVisible();
-    await expect(page.getByText('less than 6 months')).toBeVisible();
+    // 옵션 확인 (영어/한국어)
+    await expect(page.getByText(/6 months or longer|6개월 이상/i)).toBeVisible();
+    await expect(page.getByText(/less than 6 months|6개월 미만/i)).toBeVisible();
 
     // 스크린샷 저장
     await page.screenshot({
@@ -69,7 +72,7 @@ test.describe('USIM 요금제 플로우', () => {
   test('USIM 요금제 플로우 - 6개월 이상', async ({ page }) => {
     await loginWithAccount(page, testEmail, testPassword);
 
-    const usimBtn = page.getByText('Mobile plan with free USIM');
+    const usimBtn = getUsimButton(page);
     if (await usimBtn.isVisible()) {
       await usimBtn.click();
       await page.waitForTimeout(2000);
@@ -77,7 +80,7 @@ test.describe('USIM 요금제 플로우', () => {
 
     // Step 1: 체류 기간 선택 (6개월 이상)
     console.log('Step 1: 체류 기간 선택');
-    await page.getByText('6 months or longer').click();
+    await page.getByText(/6 months or longer|6개월 이상/i).click();
     await page.waitForTimeout(1000);
 
     // next 버튼 클릭
@@ -111,8 +114,8 @@ test.describe('USIM 요금제 UI 검증', () => {
     await page.waitForURL('**/home', { timeout: 15000 });
   });
 
-  test('홈에서 Mobile plan with free USIM 버튼 표시', async ({ page }) => {
-    const usimBtn = page.getByText('Mobile plan with free USIM');
+  test('홈에서 USIM 버튼 표시', async ({ page }) => {
+    const usimBtn = getUsimButton(page);
     const isVisible = await usimBtn.isVisible().catch(() => false);
 
     if (isVisible) {
@@ -124,7 +127,7 @@ test.describe('USIM 요금제 UI 검증', () => {
   });
 
   test('USIM 요금제 페이지 접근', async ({ page }) => {
-    const usimBtn = page.getByText('Mobile plan with free USIM');
+    const usimBtn = getUsimButton(page);
 
     if (await usimBtn.isVisible()) {
       await usimBtn.click();
