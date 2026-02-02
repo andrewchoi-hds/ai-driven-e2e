@@ -27,7 +27,10 @@
     "docs:all": "npm run docs:sync && npm run agent:docs",
     "build": "tsc",
     "lint": "eslint . --ext .ts",
-    "format": "prettier --write \"**/*.ts\""
+    "format": "prettier --write \"**/*.ts\"",
+    "dashboard": "cd dashboard && npm run dev",
+    "dashboard:install": "cd dashboard && npm install",
+    "dashboard:build": "cd dashboard && npm run build"
   },
   "keywords": [
     "e2e",
